@@ -1,14 +1,18 @@
-# 1️⃣ Java ka base image
-FROM eclipse-temurin:17-jdk-alpine
+# ---------- BUILD STAGE ----------
+FROM maven:3.9.9-eclipse-temurin-17 AS build
+WORKDIR /build
 
-# 2️⃣ Container ke andar working directory
+COPY pom.xml .
+COPY src ./src
+
+RUN mvn clean package -DskipTests
+
+
+# ---------- RUN STAGE ----------
+FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
 
-# 3️⃣ Pehle jar file copy karo
-COPY target/*.jar app.jar
+COPY --from=build /build/target/*.jar app.jar
 
-# 4️⃣ Spring Boot ka port expose karo
 EXPOSE 8080
-
-# 5️⃣ Application run command
 ENTRYPOINT ["java", "-jar", "app.jar"]
