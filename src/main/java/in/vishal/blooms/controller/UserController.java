@@ -16,7 +16,7 @@ public class UserController {
     private  UserService userService;
 
     // Create user
-    @PostMapping("/api/account/signup")
+    @PostMapping("/signup")
     public void CreateUser(@RequestBody UserRequest userRequest) {
         userService.createUser(userRequest);
     }
@@ -39,7 +39,7 @@ public class UserController {
 
 
 
-    @PostMapping("/api/account/login")
+    @PostMapping("/login")
     public String loginUser(@RequestBody LoginRequest loginRequest) {
         return userService.loginUser(loginRequest);
     }

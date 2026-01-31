@@ -1,0 +1,21 @@
+name: Code Test
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Code uthao
+        uses: actions/checkout@v4
+
+      - name: Java lao
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+
+      - name: Test chalao
+        run: mvn clean test
