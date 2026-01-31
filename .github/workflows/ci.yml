@@ -2,7 +2,7 @@ name: Code Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 jobs:
   test:
@@ -15,6 +15,7 @@ jobs:
       - name: Java lao
         uses: actions/setup-java@v4
         with:
+          distribution: 'temurin'
           java-version: '17'
 
       - name: Test chalao
