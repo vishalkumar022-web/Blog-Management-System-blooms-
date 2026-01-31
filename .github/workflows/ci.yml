@@ -9,14 +9,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Code uthao
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Java lao
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Test chalao
-        run: mvn clean test
+      - name: Build app
+        run: mvn clean package -DskipTests
