@@ -25,7 +25,7 @@ public class AdminController {
         adminService.createAdmin(adminRequest);
     }
 
-    @GetMapping
+    @GetMapping ("/admin DetailsById")
     public AdminResponse getAdminById(@RequestParam String AdminId) {
         return adminService.getAdminById(AdminId);
     }
@@ -41,7 +41,7 @@ public class AdminController {
     }
 
 
-    @PutMapping
+    @PutMapping("/update adminDetails")
     public AdminResponse updateAdmin(@RequestBody AdminRequest adminRequest) {
         return adminService.updateAdmin(adminRequest);
     }
@@ -58,7 +58,7 @@ public class AdminController {
         return adminService.getUserById(userId);
     }
 
-    @DeleteMapping("/users")
+    @DeleteMapping("/usersById")
     public boolean deleteUser(@RequestParam String userId) {
         return adminService.deleteUserById(userId);
     }
@@ -75,13 +75,13 @@ public class AdminController {
         return adminService.getCategoryById(categoryId);
     }
 
-    @DeleteMapping("/categories")
+    @DeleteMapping("/categoriesById")
     public boolean deleteCategory(@RequestParam String categoryId) {
         return adminService.deleteCategoryById(categoryId);
     }
 
 
-    @PutMapping("/categories/status")
+    @PutMapping("/categories/UpdateStatus")
     public boolean updateCategoryStatus(@RequestParam String categoryId,
                                         @RequestParam String status) {
 
@@ -102,13 +102,13 @@ public class AdminController {
         return adminService.getSubCategoryById(subCategoryId);
     }
 
-    @DeleteMapping("/subcategories")
+    @DeleteMapping("/subcategoriesById")
     public boolean deleteSubCategory(@RequestParam String subCategoryId) {
         return adminService.deleteSubCategoryById(subCategoryId);
     }
 
 
-    @PutMapping("/subcategories/status")
+    @PutMapping("/subcategories/UpdateStatus")
     public boolean updateSubCategoryStatus(@RequestParam String subCategoryId,
                                            @RequestParam String status) {
 
@@ -131,12 +131,12 @@ public class AdminController {
         return adminService.getBlogById(blogId);
     }
 
-    @DeleteMapping("/blogs")
+    @DeleteMapping("/blogsById")
     public boolean deleteBlog(@RequestParam String blogId) {
         return adminService.deleteBlogById(blogId);
     }
 
-    @PutMapping("/blogs/status")
+    @PutMapping("/blogs/UpdateStatus")
     public boolean updateBlogStatus(@RequestParam String blogId,
                                     @RequestParam String status) {
 
