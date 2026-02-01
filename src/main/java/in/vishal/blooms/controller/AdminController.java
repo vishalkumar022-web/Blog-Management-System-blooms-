@@ -30,7 +30,7 @@ public class AdminController {
         return adminService.getAdminById(AdminId);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/admins Details")
     public List<AdminResponse> getAdmins() {
         return adminService.getAdmins();
     }
@@ -39,7 +39,6 @@ public class AdminController {
     public String loginAdmin(@RequestBody AdminLoginRequest loginRequest) {
         return adminService.loginAdmin(loginRequest);
     }
-
 
 
     @PutMapping
@@ -54,7 +53,7 @@ public class AdminController {
         return adminService.getAllUsers();
     }
 
-    @GetMapping("/users")
+    @GetMapping("/users/user_id")
     public User getUserById(@RequestParam String userId) {
         return adminService.getUserById(userId);
     }
@@ -71,7 +70,7 @@ public class AdminController {
         return adminService.getAllCategories();
     }
 
-    @GetMapping("/categories")
+    @GetMapping("/categories/category_id")
     public Category getCategoryById(@RequestParam String categoryId) {
         return adminService.getCategoryById(categoryId);
     }
@@ -98,7 +97,7 @@ public class AdminController {
         return adminService.getAllSubCategories();
     }
 
-    @GetMapping("/subcategories")
+    @GetMapping("/subcategories/subcategory_id")
     public SubCategory getSubCategoryById(@RequestParam String subCategoryId) {
         return adminService.getSubCategoryById(subCategoryId);
     }
@@ -127,7 +126,7 @@ public class AdminController {
         return adminService.getAllBlogs();
     }
 
-    @GetMapping("/blogs")
+    @GetMapping("/blogs/blog_id")
     public Blog getBlogById(@RequestParam String blogId) {
         return adminService.getBlogById(blogId);
     }
