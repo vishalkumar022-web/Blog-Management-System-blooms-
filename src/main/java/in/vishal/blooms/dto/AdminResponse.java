@@ -1,12 +1,21 @@
 package in.vishal.blooms.dto;
 
 public class AdminResponse {
-
+private String password;
     private String adminId;
     private String adminName;
     private String email;
     private String name;
     private String profileUrl;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     private String phoneNumber;
 
     public AdminResponse() {}

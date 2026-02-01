@@ -3,6 +3,10 @@ package in.vishal.blooms.controller;
 import in.vishal.blooms.dto.AdminLoginRequest;
 import in.vishal.blooms.dto.AdminRequest;
 import in.vishal.blooms.dto.AdminResponse;
+import in.vishal.blooms.models.Blog;
+import in.vishal.blooms.models.Category;
+import in.vishal.blooms.models.SubCategory;
+import in.vishal.blooms.models.User;
 import in.vishal.blooms.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,13 +40,108 @@ public class AdminController {
         return adminService.loginAdmin(loginRequest);
     }
 
-    @DeleteMapping
-    public boolean deleteAdmin(@RequestParam String AdminId) {
-        return adminService.deleteAdmin(AdminId);
-    }
+
 
     @PutMapping
     public AdminResponse updateAdmin(@RequestBody AdminRequest adminRequest) {
         return adminService.updateAdmin(adminRequest);
     }
+
+    // ================= USERS =================
+
+    @GetMapping("/users/all")
+    public List<User> getAllUsers() {
+        return adminService.getAllUsers();
+    }
+
+    @GetMapping("/users")
+    public User getUserById(@RequestParam String userId) {
+        return adminService.getUserById(userId);
+    }
+
+    @DeleteMapping("/users")
+    public boolean deleteUser(@RequestParam String userId) {
+        return adminService.deleteUserById(userId);
+    }
+
+    // ================= CATEGORY =================
+
+    @GetMapping("/categories/all")
+    public List<Category> getAllCategories() {
+        return adminService.getAllCategories();
+    }
+
+    @GetMapping("/categories")
+    public Category getCategoryById(@RequestParam String categoryId) {
+        return adminService.getCategoryById(categoryId);
+    }
+
+    @DeleteMapping("/categories")
+    public boolean deleteCategory(@RequestParam String categoryId) {
+        return adminService.deleteCategoryById(categoryId);
+    }
+
+
+    @PutMapping("/categories/status")
+    public boolean updateCategoryStatus(@RequestParam String categoryId,
+                                        @RequestParam String status) {
+
+        return adminService.updateCategoryStatus(categoryId, status);
+    }
+
+
+
+    // ================= SUB CATEGORY =================
+
+    @GetMapping("/subcategories/all")
+    public List<SubCategory> getAllSubCategories() {
+        return adminService.getAllSubCategories();
+    }
+
+    @GetMapping("/subcategories")
+    public SubCategory getSubCategoryById(@RequestParam String subCategoryId) {
+        return adminService.getSubCategoryById(subCategoryId);
+    }
+
+    @DeleteMapping("/subcategories")
+    public boolean deleteSubCategory(@RequestParam String subCategoryId) {
+        return adminService.deleteSubCategoryById(subCategoryId);
+    }
+
+
+    @PutMapping("/subcategories/status")
+    public boolean updateSubCategoryStatus(@RequestParam String subCategoryId,
+                                           @RequestParam String status) {
+
+        return adminService.updateSubCategoryStatus(subCategoryId, status);
+    }
+
+
+
+
+
+    // ================= BLOG =================
+
+    @GetMapping("/blogs/all")
+    public List<Blog> getAllBlogs() {
+        return adminService.getAllBlogs();
+    }
+
+    @GetMapping("/blogs")
+    public Blog getBlogById(@RequestParam String blogId) {
+        return adminService.getBlogById(blogId);
+    }
+
+    @DeleteMapping("/blogs")
+    public boolean deleteBlog(@RequestParam String blogId) {
+        return adminService.deleteBlogById(blogId);
+    }
+
+    @PutMapping("/blogs/status")
+    public boolean updateBlogStatus(@RequestParam String blogId,
+                                    @RequestParam String status) {
+
+        return adminService.updateBlogStatus(blogId, status);
+    }
+
 }
