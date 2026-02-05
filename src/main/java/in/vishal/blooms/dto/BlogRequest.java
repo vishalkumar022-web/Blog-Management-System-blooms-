@@ -19,7 +19,7 @@ public class BlogRequest {
 
     private LocalDateTime blogCreatedDTTM;
 
-    private String blogCategoryId; ;
+    private String blogCategoryId;
     private String blogSubcategoryId;
 
     public BlogRequest(String blogId, String blogTitle, String blogDescription, String blogContent, String blogStatus, String blogAuthorId, LocalDateTime blogCreatedDTTM, String blogCategoryId, String blogSubcategoryId) {
