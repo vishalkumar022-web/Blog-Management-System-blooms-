@@ -36,73 +36,46 @@ public class BlogService {
 
     // Create a Blog here :--
 
-    public void createBlog(BlogRequest blogRequest){
+    // Inside BlogService.java
 
-        boolean categoryExists = false;
+public void createBlog(BlogRequest blogRequest) {
 
-        Optional<Category> optionalCategory= categoryRepository.findById(blogRequest.getblogCategoryId());
-
-        if(optionalCategory.isPresent()){
-
-            categoryExists = true;
-        }
-
-        if (!categoryExists) {
-            System.out.println("Invalid category");
-            return;
-        }
-
-        // STEP 2 CategoryMapping se subcategory validate karo ( MAIN CHANGE)
-        CategoryMapping matchedMapping = null;
-
-        Optional<CategoryMapping>optionalCategoryMapping = categoryMappingRepository.findById(blogRequest.getblogCategoryId());
-
-        if(optionalCategoryMapping.isPresent()){
-            matchedMapping = optionalCategoryMapping.get(); // ye category id store ho gya matchedMapping me
-
-        }
-
-
-        if (matchedMapping == null) {
-            System.out.println("No subcategories exist for this category because this category id is not exist in categoryMapping list");
-            return;
-        }
-
-        // STEP 3️ SubCategoryId valid hai ya nahi (mapping ke andar)
-        boolean subCategoryValid = false;
-
-        if (matchedMapping.getSubCategoryIdsList().contains(blogRequest.getblogSubcategoryId())){
-            subCategoryValid = true;
-
-        }
-
-
-        if (!subCategoryValid) {
-            System.out.println("Invalid subcategory for this category");
-            return;
-        }
-
-        Blog blog = new Blog() ;
-
-
-
-        blog.setTitle(blogRequest.getblogTitle());
-        blog.setDescription(blogRequest.getblogDescription());
-        blog.setContent(blogRequest.getblogContent());
-        blog.setCategoryId(blogRequest.getblogCategoryId());
-        blog.setSubcategoryId(blogRequest.getblogSubcategoryId());
-        blog.setAuthorId(blogRequest.getblogAuthorId());
-
-        blog.setActive(true);
-        blog.setCreatedDTTM(LocalDateTime.now());
-        blog.setStatus(Status.INREVIEW);
-
-        blog.setId(String.valueOf(System.currentTimeMillis()));
-
-        blogRepository.save(blog);
-
-        System.out.println("Blog created successfully");
+    // 1️⃣ Validate Category Exists
+    if (!categoryRepository.existsById(blogRequest.getblogCategoryId())) {
+        throw new RuntimeException("Invalid Category ID");
     }
+
+    // 2️⃣ Validate SubCategory Exists & Belongs to Category
+    // (Mapping table ki zarurat nahi hai)
+    Optional<SubCategory> subCatOptional = subCategoryRepository.findById(blogRequest.getblogSubcategoryId());
+    
+    if (subCatOptional.isEmpty()) {
+        throw new RuntimeException("Invalid SubCategory ID");
+    }
+    
+    SubCategory subCategory = subCatOptional.get();
+    // Check: Kya ye subcategory waqai ussi category ki hai?
+    if (!subCategory.getCategoryId().equals(blogRequest.getblogCategoryId())) {
+        throw new RuntimeException("SubCategory does not belong to the selected Category");
+    }
+
+    // 3️⃣ Create Blog
+    Blog blog = new Blog();
+    blog.setId(String.valueOf(System.currentTimeMillis()));
+    blog.setTitle(blogRequest.getblogTitle());
+    blog.setDescription(blogRequest.getblogDescription());
+    blog.setContent(blogRequest.getblogContent());
+    blog.setCategoryId(blogRequest.getblogCategoryId());
+    blog.setSubcategoryId(blogRequest.getblogSubcategoryId());
+    blog.setAuthorId(blogRequest.getblogAuthorId()); 
+
+    blog.setActive(true);
+    blog.setCreatedDTTM(LocalDateTime.now());
+    blog.setStatus(Status.INREVIEW); 
+
+    blogRepository.save(blog);
+    System.out.println("✅ Blog created successfully");
+}
 
     // read the blog :--
     public List<BlogResponse> getBlogs() {
