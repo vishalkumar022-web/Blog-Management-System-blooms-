@@ -4,37 +4,34 @@ import in.vishal.blooms.dto.UserRequest;
 import in.vishal.blooms.dto.UserResponse;
 import in.vishal.blooms.models.*;
 import in.vishal.blooms.service.AdminService;
-import in.vishal.blooms.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/Admin")
+@RequestMapping("/api/admin") // ✅ lowercase & standard
 public class AdminController {
 
     @Autowired
     private AdminService adminService;
 
-    @GetMapping ("/admin/DetailsById")
-    public UserResponse getAdminById(@RequestParam String UserId) {
-        return adminService.getAdminById(UserId);
+    // ================= ADMINS =================
+
+    @GetMapping("/details") // ✅ Fixed URL
+    public UserResponse getAdminById(@RequestParam String userId) {
+        return adminService.getAdminById(userId);
     }
 
-
-    @GetMapping("/admins/Details")
+    @GetMapping("/list") // ✅ Fixed URL
     public List<UserResponse> getAdmins() {
         return adminService.getAdmins();
     }
 
-
-    @PutMapping("/update/adminDetails")
+    @PutMapping("/update") // ✅ Fixed URL
     public UserResponse updateAdmin(@RequestBody UserRequest adminRequest) {
         return adminService.updateAdmin(adminRequest);
     }
-
-
 
     // ================= USERS =================
 
@@ -43,12 +40,12 @@ public class AdminController {
         return adminService.getAllUsers();
     }
 
-    @GetMapping("/users/user_id")
+    @GetMapping("/users/details") // ✅ Fixed
     public User getUserById(@RequestParam String userId) {
         return adminService.getUserById(userId);
     }
 
-    @DeleteMapping("/usersById")
+    @DeleteMapping("/users/delete") // ✅ Fixed
     public boolean deleteUser(@RequestParam String userId) {
         return adminService.deleteUserById(userId);
     }
@@ -60,25 +57,20 @@ public class AdminController {
         return adminService.getAllCategories();
     }
 
-    @GetMapping("/categories/category_id")
+    @GetMapping("/categories/details")
     public Category getCategoryById(@RequestParam String categoryId) {
         return adminService.getCategoryById(categoryId);
     }
 
-    @DeleteMapping("/categoriesById")
+    @DeleteMapping("/categories/delete")
     public boolean deleteCategory(@RequestParam String categoryId) {
         return adminService.deleteCategoryById(categoryId);
     }
 
-
-    @PutMapping("/categories/UpdateStatus")
-    public boolean updateCategoryStatus(@RequestParam String categoryId,
-                                        @RequestParam Status status) {
-
+    @PutMapping("/categories/status")
+    public boolean updateCategoryStatus(@RequestParam String categoryId, @RequestParam Status status) {
         return adminService.updateCategoryStatus(categoryId, status);
     }
-
-
 
     // ================= SUB CATEGORY =================
 
@@ -87,27 +79,15 @@ public class AdminController {
         return adminService.getAllSubCategories();
     }
 
-    @GetMapping("/subcategories/subcategory_id")
-    public SubCategory getSubCategoryById(@RequestParam String subCategoryId) {
-        return adminService.getSubCategoryById(subCategoryId);
-    }
-
-    @DeleteMapping("/subcategoriesById")
+    @DeleteMapping("/subcategories/delete")
     public boolean deleteSubCategory(@RequestParam String subCategoryId) {
         return adminService.deleteSubCategoryById(subCategoryId);
     }
 
-
-    @PutMapping("/subcategories/UpdateStatus")
-    public boolean updateSubCategoryStatus(@RequestParam String subCategoryId,
-                                           @RequestParam Status status) {
-
+    @PutMapping("/subcategories/status")
+    public boolean updateSubCategoryStatus(@RequestParam String subCategoryId, @RequestParam Status status) {
         return adminService.updateSubCategoryStatus(subCategoryId, status);
     }
-
-
-
-
 
     // ================= BLOG =================
 
@@ -116,21 +96,18 @@ public class AdminController {
         return adminService.getAllBlogs();
     }
 
-    @GetMapping("/blogs/blog_id")
+    @GetMapping("/blogs/details")
     public Blog getBlogById(@RequestParam String blogId) {
         return adminService.getBlogById(blogId);
     }
 
-    @DeleteMapping("/blogsById")
+    @DeleteMapping("/blogs/delete")
     public boolean deleteBlog(@RequestParam String blogId) {
         return adminService.deleteBlogById(blogId);
     }
 
-    @PutMapping("/blogs/UpdateStatus")
-    public boolean updateBlogStatus(@RequestParam String blogId,
-                                    @RequestParam Status status) {
-
+    @PutMapping("/blogs/status")
+    public boolean updateBlogStatus(@RequestParam String blogId, @RequestParam Status status) {
         return adminService.updateBlogStatus(blogId, status);
     }
-
 }
