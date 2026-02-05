@@ -17,19 +17,19 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    @GetMapping ("/admin DetailsById")
+    @GetMapping ("/admin/DetailsById")
     public UserResponse getAdminById(@RequestParam String UserId) {
         return adminService.getAdminById(UserId);
     }
 
 
-    @GetMapping("/admins Details")
+    @GetMapping("/admins/Details")
     public List<UserResponse> getAdmins() {
         return adminService.getAdmins();
     }
 
 
-    @PutMapping("/update adminDetails")
+    @PutMapping("/update/adminDetails")
     public UserResponse updateAdmin(@RequestBody UserRequest adminRequest) {
         return adminService.updateAdmin(adminRequest);
     }
