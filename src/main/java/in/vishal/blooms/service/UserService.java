@@ -1,6 +1,7 @@
 package in.vishal.blooms.service;
 
 import in.vishal.blooms.dto.LoginRequest;
+import in.vishal.blooms.models.Role;
 import in.vishal.blooms.repository.UserRepository;
 import in.vishal.blooms.dto.UserRequest;
 import in.vishal.blooms.dto.UserResponse;
@@ -19,21 +20,7 @@ public class UserService {
         this.userRepository = userRepository ;
     }
 
-    // Create user
 
-    public void createUser(UserRequest userRequest){
-        User user = new User();
-
-        user.setEmail(userRequest.getEmail());
-        user.setName(userRequest.getName());
-        user.setUserName(userRequest.getUserName());
-        user.setProfileUrl(userRequest.getProfileUrl());
-        user.setPassword(userRequest.getPassword());
-        user.setPhoneNumber(userRequest.getPhoneNumber());
-        user.setActive(true);
-        user.setId(String.valueOf(System.currentTimeMillis()));
-        userRepository.save(user);
-    }
 
     // Search user by its id :-
 
@@ -51,6 +38,10 @@ public class UserService {
             return null;
         }
 
+        if(user.getRole() != Role.ADMIN){
+            return null;
+        }
+
         UserResponse userResponse = new UserResponse();
         userResponse.setUserId(user.getId());
         userResponse.setEmail(user.getEmail());
@@ -59,6 +50,7 @@ public class UserService {
         userResponse.setUserName(user.getUserName());
         //  password intentionally NOT set
         userResponse.setPhoneNumber(user.getPhoneNumber());
+        userResponse.setRole(user.getRole());
         return userResponse;
     }
 
@@ -71,14 +63,14 @@ public class UserService {
         List<User>userList = userRepository.findAll();
         List<UserResponse> userResponses = new ArrayList<>();
         for(User user : userList){
-            if(user.isActive()){
+            if(user.isActive() && user.getRole() != Role.ADMIN){
                 UserResponse userResponse = new UserResponse();
 
                 userResponse.setUserId(user.getId());
                 userResponse.setEmail(user.getEmail());
                 userResponse.setProfileUrl(user.getProfileUrl());
                 userResponse.setName(user.getName());
-                userResponse.setPassword(user.getPassword());
+
                 userResponse.setUserName(user.getUserName());
                 userResponse.setPhoneNumber(user.getPhoneNumber());
                 userResponses.add(userResponse);
@@ -99,45 +91,17 @@ public class UserService {
             return false ;
         }
 
+
         User user = optionalUser.get();
 
-        user.setActive(false);
+        if(user.getRole()==Role.USER){
+            user.setActive(false);
         userRepository.save(user);
         return true ;
     }
+        return false;
 
-
-
-    public String loginUser(LoginRequest loginRequest) {
-
-        User user = userRepository.findByPhoneNumber(loginRequest.getPhoneNumber());
-
-        // user hi nahi mila
-        if (user == null) {
-            System.out.println("Login Failed ❌ : Phone number not found");
-            return "Login Failed";
-        }
-
-        // inactive user
-        if (!user.isActive()) {
-            System.out.println("Login Failed ❌ : User inactive");
-            return "Login Failed";
-        }
-
-        // password match
-        if (user.getPassword().equals(loginRequest.getPassword())) {
-            System.out.println("Login Successful ✅");
-            return "Login Successful";
-        }
-
-        System.out.println("Login Failed ❌ : Wrong password");
-        return "Login Failed";
     }
-
-
-
-
-
 
     // Update User
 
@@ -152,20 +116,20 @@ public class UserService {
 
         User user = optionalUser.get();
 
-
-        user.setName(userRequest.getName());
-        user.setEmail(userRequest.getEmail());
-        user.setPassword(userRequest.getPassword());
-        user.setUserName(userRequest.getUserName());
-        user.setProfileUrl(userRequest.getProfileUrl());
-        user.setPhoneNumber(userRequest.getPhoneNumber());
-        userRepository.save(user);
-
+if(user.getRole()!=Role.ADMIN) {
+    user.setName(userRequest.getName());
+    user.setEmail(userRequest.getEmail());
+    user.setPassword(userRequest.getPassword());
+    user.setUserName(userRequest.getUserName());
+    user.setProfileUrl(userRequest.getProfileUrl());
+    user.setPhoneNumber(userRequest.getPhoneNumber());
+    user.setRole(userRequest.getRole());
+    userRepository.save(user);
+}
         userResponse.setUserName(user.getUserName());
         userResponse.setUserId(user.getId());
         userResponse.setName(user.getName());
         userResponse.setEmail(user.getEmail());
-        userResponse.setPassword(user.getPassword());
         userResponse.setProfileUrl(user.getProfileUrl());
 
         return userResponse;

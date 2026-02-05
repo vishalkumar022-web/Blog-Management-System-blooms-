@@ -1,5 +1,7 @@
 package in.vishal.blooms.dto;
 
+import in.vishal.blooms.models.Status;
+
 public class SubCategoryResponse {
 
 
@@ -8,7 +10,15 @@ public class SubCategoryResponse {
     private String subCategoryTittle;
     private String subCategoryDesc;
     private String subCategoryUrl;
+private Status status;
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 
     public SubCategoryResponse() {
     }

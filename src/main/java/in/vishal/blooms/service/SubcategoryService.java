@@ -49,7 +49,7 @@ public class SubcategoryService {
         sc.setCategoryId(subCategoryRequest.getCategoryId());
         sc.setId(String.valueOf(System.currentTimeMillis()));
         sc.setActive(true);
-        sc.setStatus(Status.PUBLISHED.getDisplayName());
+        sc.setStatus(Status.INREVIEW);
         sc.setCreatedBy("ADMIN");
         sc.setCreatedDTTM(LocalDateTime.now());
         subCategoryRepository.save(sc);
@@ -90,6 +90,7 @@ public class SubcategoryService {
         response.setSubCategoryDesc(subCategory.getDescription());
         response.setSubCategoryUrl(subCategory.getUrl());
         response.setCategoryId(subCategory.getCategoryId());
+        response.setStatus(subCategory.getStatus());
         return response;
     }
     // Read all :---

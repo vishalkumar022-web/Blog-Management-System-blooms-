@@ -2,15 +2,11 @@ package in.vishal.blooms.dto;
 
 public class LoginRequest {
 
-    private String password;
     private String phoneNumber;
+    private String password;
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    // 🔥 DEFAULT CONSTRUCTOR (MANDATORY)
+    public LoginRequest() {
     }
 
     public String getPhoneNumber() {
@@ -21,8 +17,11 @@ public class LoginRequest {
         this.phoneNumber = phoneNumber;
     }
 
-    public LoginRequest(String password, String phoneNumber) {
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
         this.password = password;
-        this.phoneNumber = phoneNumber;
     }
 }

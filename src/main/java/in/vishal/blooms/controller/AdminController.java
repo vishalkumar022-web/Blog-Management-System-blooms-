@@ -1,13 +1,10 @@
 package in.vishal.blooms.controller;
 
-import in.vishal.blooms.dto.AdminLoginRequest;
-import in.vishal.blooms.dto.AdminRequest;
-import in.vishal.blooms.dto.AdminResponse;
-import in.vishal.blooms.models.Blog;
-import in.vishal.blooms.models.Category;
-import in.vishal.blooms.models.SubCategory;
-import in.vishal.blooms.models.User;
+import in.vishal.blooms.dto.UserRequest;
+import in.vishal.blooms.dto.UserResponse;
+import in.vishal.blooms.models.*;
 import in.vishal.blooms.service.AdminService;
+import in.vishal.blooms.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,31 +17,24 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    @PostMapping("/signup")
-    public void createAdmin(@RequestBody AdminRequest adminRequest) {
-        adminService.createAdmin(adminRequest);
+    @GetMapping ("/admin DetailsById")
+    public UserResponse getAdminById(@RequestParam String UserId) {
+        return adminService.getAdminById(UserId);
     }
 
-    @GetMapping ("/admin DetailsById")
-    public AdminResponse getAdminById(@RequestParam String AdminId) {
-        return adminService.getAdminById(AdminId);
-    }
 
     @GetMapping("/admins Details")
-    public List<AdminResponse> getAdmins() {
+    public List<UserResponse> getAdmins() {
         return adminService.getAdmins();
-    }
-
-    @PostMapping("/login")
-    public String loginAdmin(@RequestBody AdminLoginRequest loginRequest) {
-        return adminService.loginAdmin(loginRequest);
     }
 
 
     @PutMapping("/update adminDetails")
-    public AdminResponse updateAdmin(@RequestBody AdminRequest adminRequest) {
+    public UserResponse updateAdmin(@RequestBody UserRequest adminRequest) {
         return adminService.updateAdmin(adminRequest);
     }
+
+
 
     // ================= USERS =================
 
@@ -83,7 +73,7 @@ public class AdminController {
 
     @PutMapping("/categories/UpdateStatus")
     public boolean updateCategoryStatus(@RequestParam String categoryId,
-                                        @RequestParam String status) {
+                                        @RequestParam Status status) {
 
         return adminService.updateCategoryStatus(categoryId, status);
     }
@@ -110,7 +100,7 @@ public class AdminController {
 
     @PutMapping("/subcategories/UpdateStatus")
     public boolean updateSubCategoryStatus(@RequestParam String subCategoryId,
-                                           @RequestParam String status) {
+                                           @RequestParam Status status) {
 
         return adminService.updateSubCategoryStatus(subCategoryId, status);
     }
@@ -138,7 +128,7 @@ public class AdminController {
 
     @PutMapping("/blogs/UpdateStatus")
     public boolean updateBlogStatus(@RequestParam String blogId,
-                                    @RequestParam String status) {
+                                    @RequestParam Status status) {
 
         return adminService.updateBlogStatus(blogId, status);
     }

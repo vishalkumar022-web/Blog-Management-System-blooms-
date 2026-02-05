@@ -1,11 +1,22 @@
 package in.vishal.blooms.dto;
 
+import in.vishal.blooms.models.Status;
+
 public class CategoryResponse {
 
     private String id;
     private String title;
     private String desc;
     private String categoryUrl;
+private Status status;
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 
     public CategoryResponse() {
     }

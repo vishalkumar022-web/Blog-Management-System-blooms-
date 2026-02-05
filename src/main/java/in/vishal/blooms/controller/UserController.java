@@ -15,11 +15,6 @@ public class UserController {
     @Autowired
     private  UserService userService;
 
-    // Create user
-    @PostMapping("/signup")
-    public void CreateUser(@RequestBody UserRequest userRequest) {
-        userService.createUser(userRequest);
-    }
 
     // Search user by its id :-
     @GetMapping
@@ -35,13 +30,6 @@ public class UserController {
     public List<UserResponse> getUsers() {
 
         return userService.getUsers();
-    }
-
-
-
-    @PostMapping("/login")
-    public String loginUser(@RequestBody LoginRequest loginRequest) {
-        return userService.loginUser(loginRequest);
     }
 
 

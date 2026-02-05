@@ -1,5 +1,7 @@
 package in.vishal.blooms.dto;
 
+import in.vishal.blooms.models.Role;
+
 public class UserRequest {
 
     private String userId;
@@ -9,6 +11,16 @@ public class UserRequest {
     private String profileUrl;
     private String password;
     private String phoneNumber;
+    private Role role ;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }

@@ -95,7 +95,7 @@ public class BlogService {
 
         blog.setActive(true);
         blog.setCreatedDTTM(LocalDateTime.now());
-        blog.setStatus(Status.INREVIEW.getDisplayName());
+        blog.setStatus(Status.INREVIEW);
 
         blog.setId(String.valueOf(System.currentTimeMillis()));
 
@@ -118,6 +118,7 @@ public class BlogService {
                 blogResponse.setDescription(blog.getDescription());
                 blogResponse.setContent(blog.getContent());
                 blogResponse.setAuthorId(blog.getAuthorId());
+                blogResponse.setStatus(blogResponse.getStatus());
 
 
 

@@ -1,4 +1,4 @@
-package in.vishal.blooms.Config;
+package in.vishal.blooms.config;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;

@@ -1,8 +1,7 @@
 package in.vishal.blooms.service;
 
-import in.vishal.blooms.dto.AdminLoginRequest;
-import in.vishal.blooms.dto.AdminRequest;
-import in.vishal.blooms.dto.AdminResponse;
+import in.vishal.blooms.dto.UserRequest;
+import in.vishal.blooms.dto.UserResponse;
 import in.vishal.blooms.models.*;
 import in.vishal.blooms.repository.*;
 import org.springframework.stereotype.Service;
@@ -15,136 +14,114 @@ import java.util.Optional;
 public class AdminService {
 
 
-    private final AdminRepository adminRepository;
+
     private final UserRepository userRepository;
     private final BlogRepository blogRepository;
     private final CategoryRepository categoryRepository;
     private final SubCategoryRepository subCategoryRepository;
 
-    public AdminService(AdminRepository adminRepository,
-                        UserRepository userRepository,
+    public AdminService(UserRepository userRepository,
                         BlogRepository blogRepository,
                         CategoryRepository categoryRepository,
                         SubCategoryRepository subCategoryRepository) {
-        this.adminRepository = adminRepository;
+
         this.userRepository = userRepository;
         this.blogRepository = blogRepository;
         this.categoryRepository = categoryRepository;
         this.subCategoryRepository = subCategoryRepository;
     }
 
-    // Create Admin
-    public void createAdmin(AdminRequest adminRequest) {
-
-        Admin admin = new Admin();
-        admin.setId(String.valueOf(System.currentTimeMillis()));
-        admin.setAdminName(adminRequest.getAdminName());
-        admin.setEmail(adminRequest.getEmail());
-        admin.setName(adminRequest.getName());
-        admin.setProfileUrl(adminRequest.getProfileUrl());
-        admin.setPassword(adminRequest.getPassword());
-        admin.setPhoneNumber(adminRequest.getPhoneNumber());
-
-
-        adminRepository.save(admin);
-    }
 
     // Get admin by id
-    public AdminResponse getAdminById(String adminId) {
+    public UserResponse getAdminById(String userId) {
 
-        Optional<Admin> optionalAdmin = adminRepository.findById(adminId);
+        Optional<User> userOptional = userRepository.findById(userId);
 
-        if (optionalAdmin.isEmpty()) {
+        if (userOptional.isEmpty()) {
             return null;
         }
 
-        Admin admin = optionalAdmin.get();
+        User user = userOptional.get();
 
-
-        AdminResponse response = new AdminResponse();
-        response.setAdminId(admin.getId());
-        response.setAdminName(admin.getAdminName());
-        response.setEmail(admin.getEmail());
-        response.setName(admin.getName());
-        response.setProfileUrl(admin.getProfileUrl());
-        response.setPhoneNumber(admin.getPhoneNumber());
-
-        return response;
-    }
-
-    // Get all admins
-    public List<AdminResponse> getAdmins() {
-
-        List<Admin> adminList = adminRepository.findAll();
-        List<AdminResponse> responses = new ArrayList<>();
-
-        for (Admin admin : adminList) {
-
-            AdminResponse response = new AdminResponse();
-            response.setAdminId(admin.getId());
-            response.setAdminName(admin.getAdminName());
-            response.setEmail(admin.getEmail());
-            response.setName(admin.getName());
-            response.setProfileUrl(admin.getProfileUrl());
-            response.setPassword(admin.getPassword());
-            response.setPhoneNumber(admin.getPhoneNumber());
-            responses.add(response);
+        if (!user.isActive()) {
+            return null;
         }
 
-        return responses;
+        if(user.getRole() != Role.USER){
+            return null;
+        }
+
+        UserResponse userResponse = new UserResponse();
+        userResponse.setUserId(user.getId());
+        userResponse.setEmail(user.getEmail());
+        userResponse.setProfileUrl(user.getProfileUrl());
+        userResponse.setName(user.getName());
+        userResponse.setUserName(user.getUserName());
+        //  password intentionally NOT set
+        userResponse.setPhoneNumber(user.getPhoneNumber());
+        userResponse.setRole(user.getRole());
+        return userResponse;
     }
 
 
+    // GetAll admins
 
-    // Login admin
-    public String loginAdmin(AdminLoginRequest loginRequest) {
+    public List<UserResponse> getAdmins(){
 
-        Admin admin = adminRepository.findByPhoneNumber(loginRequest.getPhoneNumber());
+        List<User>userList = userRepository.findAll();
+        List<UserResponse> userResponses = new ArrayList<>();
+        for(User user : userList){
+            if(user.isActive() && user.getRole() == Role.ADMIN){
+                UserResponse userResponse = new UserResponse();
 
-        if (admin == null) {
-            return "Login Failed";
+                userResponse.setUserId(user.getId());
+                userResponse.setEmail(user.getEmail());
+                userResponse.setProfileUrl(user.getProfileUrl());
+                userResponse.setName(user.getName());
+
+                userResponse.setUserName(user.getUserName());
+                userResponse.setPhoneNumber(user.getPhoneNumber());
+                userResponses.add(userResponse);
+
+            }
         }
-
-
-        if (admin.getPassword().equals(loginRequest.getPassword())) {
-            return "Login Successful";
-        }
-
-        return "Login Failed";
+        return userResponses;
     }
+
 
     // Update admin
-    public AdminResponse updateAdmin(AdminRequest adminRequest) {
 
-        AdminResponse response = new AdminResponse();
 
-        if (adminRequest.getAdminId() == null) {
-            return response;
+    public UserResponse updateAdmin(UserRequest userRequest ){
+
+        UserResponse userResponse = new UserResponse();
+        if(userRequest.getUserId()==null){
+            System.out.println("this user id is not exist so, you cannot update this user data ");
+            return userResponse;
         }
+        Optional<User> optionalUser = userRepository.findById(userRequest.getUserId());
 
-        Optional<Admin> optionalAdmin = adminRepository.findById(adminRequest.getAdminId());
+        User user = optionalUser.get();
 
-        Admin admin = optionalAdmin.get();
+        if(user.getRole()==Role.ADMIN) {
+            user.setName(userRequest.getName());
+            user.setEmail(userRequest.getEmail());
+            user.setPassword(userRequest.getPassword());
+            user.setUserName(userRequest.getUserName());
+            user.setProfileUrl(userRequest.getProfileUrl());
+            user.setPhoneNumber(userRequest.getPhoneNumber());
+            user.setRole(userRequest.getRole());
+            userRepository.save(user);
+        }
+        userResponse.setUserName(user.getUserName());
+        userResponse.setUserId(user.getId());
+        userResponse.setName(user.getName());
+        userResponse.setEmail(user.getEmail());
 
-        admin.setAdminName(adminRequest.getAdminName());
-        admin.setEmail(adminRequest.getEmail());
-        admin.setName(adminRequest.getName());
-        admin.setProfileUrl(adminRequest.getProfileUrl());
-        admin.setPassword(adminRequest.getPassword());
-        admin.setPhoneNumber(adminRequest.getPhoneNumber());
+        userResponse.setProfileUrl(user.getProfileUrl());
 
-        adminRepository.save(admin);
-
-        response.setAdminId(admin.getId());
-        response.setAdminName(admin.getAdminName());
-        response.setEmail(admin.getEmail());
-        response.setName(admin.getName());
-        response.setProfileUrl(admin.getProfileUrl());
-        response.setPassword(admin.getPassword());
-
-        return response;
+        return userResponse;
     }
-
 
 // ================= USERS =================
 
@@ -211,7 +188,7 @@ public class AdminService {
 
 
 
-    public boolean updateCategoryStatus(String categoryId, String status) {
+    public boolean updateCategoryStatus(String categoryId, Status status) {
 
         Optional<Category> optionalCategory =
                 categoryRepository.findById(categoryId);
@@ -262,7 +239,7 @@ public class AdminService {
     }
 
 
-    public boolean updateSubCategoryStatus(String subCategoryId, String status) {
+    public boolean updateSubCategoryStatus(String subCategoryId, Status status) {
 
         Optional<SubCategory> optionalSubCategory =
                 subCategoryRepository.findById(subCategoryId);
@@ -313,7 +290,7 @@ public class AdminService {
 
 
 
-    public boolean updateBlogStatus(String blogId, String status) {
+    public boolean updateBlogStatus(String blogId, Status status) {
 
         Optional<Blog> optionalBlog = blogRepository.findById(blogId);
 

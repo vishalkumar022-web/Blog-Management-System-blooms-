@@ -33,7 +33,7 @@ public class Blog {
 
     private String content;
 
-    private String status;
+    private Status status;
 
     private String authorId;
 
@@ -85,11 +85,11 @@ public class Blog {
         this.content = content;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

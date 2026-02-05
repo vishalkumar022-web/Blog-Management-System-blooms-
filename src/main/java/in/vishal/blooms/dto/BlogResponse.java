@@ -11,8 +11,15 @@ public class BlogResponse {
     private String subCategoryName;
 
     private String authorId;
+private String status;
 
+    public String getStatus() {
+        return status;
+    }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public BlogResponse() {
     }
