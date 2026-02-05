@@ -28,8 +28,8 @@ public class CategoryService {
         category.setName(categoryRequest.getTitle());
         category.setDescription(categoryRequest.getDesc());
         category.setImageUrl(categoryRequest.getCategoryUrl());
-        category.setStatus(Status.INREVIEW);
-        category.setCreatedBy("ADMIN");
+        category.setStatus(Status.INREVIEW.getDisplayName()   );
+
         category.setActive(true);
         category.setCreatedDTTM(LocalDateTime.now());
         category.setId(String.valueOf(System.currentTimeMillis()));
@@ -57,7 +57,7 @@ public class CategoryService {
         response.setTitle(category.getName());
         response.setDesc(category.getDescription());
         response.setCategoryUrl(category.getImageUrl());
-        response.setStatus(category.getStatus());
+        response.setStatus(Status.INREVIEW.getDisplayName());
 
         return response;
     }
@@ -75,7 +75,7 @@ public class CategoryService {
                 response.setTitle(category.getName());
                 response.setDesc(category.getDescription());
                 response.setCategoryUrl(category.getImageUrl());
-                response.setStatus(category.getStatus());
+                response.setStatus(Status.INREVIEW.getDisplayName());
                 responses.add(response);
             }
         }

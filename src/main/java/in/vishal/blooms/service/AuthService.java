@@ -69,13 +69,18 @@ public class AuthService {
 
         // 5️⃣ response
         UserResponse response = new UserResponse();
+
         response.setUserId(user.getId());
         response.setUserName(user.getUserName());
         response.setEmail(user.getEmail());
+        response.setName(user.getName());                 // ✅ ADD
+        response.setPhoneNumber(user.getPhoneNumber());   // ✅ ADD
+        response.setProfileUrl(user.getProfileUrl());     // ✅ ADD
         response.setRole(user.getRole());
         response.setToken(token);
 
         return response;
+
     }
 
 

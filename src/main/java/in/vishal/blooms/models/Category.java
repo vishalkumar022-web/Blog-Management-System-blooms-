@@ -25,7 +25,7 @@ public class Category {
     private LocalDateTime createdDTTM;
     private String createdBy;
 
-    private Status status;
+    private String status;
 
     private List <SubCategory> subCategoryList = new ArrayList<>();  //
 
@@ -85,11 +85,11 @@ public class Category {
         this.createdBy = createdBy;
     }
 
-    public Status getStatus() {
+    public String  getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 }

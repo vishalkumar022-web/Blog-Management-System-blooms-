@@ -70,9 +70,10 @@ public class UserService {
                 userResponse.setEmail(user.getEmail());
                 userResponse.setProfileUrl(user.getProfileUrl());
                 userResponse.setName(user.getName());
-
+                userResponse.setRole(user.getRole());
                 userResponse.setUserName(user.getUserName());
                 userResponse.setPhoneNumber(user.getPhoneNumber());
+
                 userResponses.add(userResponse);
 
             }

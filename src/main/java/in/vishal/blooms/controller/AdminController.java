@@ -17,19 +17,19 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    @GetMapping ("/admin DetailsById")
+    @GetMapping ("/admin/DetailsById")
     public UserResponse getAdminById(@RequestParam String UserId) {
         return adminService.getAdminById(UserId);
     }
 
 
-    @GetMapping("/admins Details")
+    @GetMapping("/admins/Details")
     public List<UserResponse> getAdmins() {
         return adminService.getAdmins();
     }
 
 
-    @PutMapping("/update adminDetails")
+    @PutMapping("/update/adminDetails")
     public UserResponse updateAdmin(@RequestBody UserRequest adminRequest) {
         return adminService.updateAdmin(adminRequest);
     }
@@ -73,7 +73,7 @@ public class AdminController {
 
     @PutMapping("/categories/UpdateStatus")
     public boolean updateCategoryStatus(@RequestParam String categoryId,
-                                        @RequestParam Status status) {
+                                        @RequestParam String status) {
 
         return adminService.updateCategoryStatus(categoryId, status);
     }
@@ -100,7 +100,7 @@ public class AdminController {
 
     @PutMapping("/subcategories/UpdateStatus")
     public boolean updateSubCategoryStatus(@RequestParam String subCategoryId,
-                                           @RequestParam Status status) {
+                                           @RequestParam String status) {
 
         return adminService.updateSubCategoryStatus(subCategoryId, status);
     }
@@ -128,7 +128,7 @@ public class AdminController {
 
     @PutMapping("/blogs/UpdateStatus")
     public boolean updateBlogStatus(@RequestParam String blogId,
-                                    @RequestParam Status status) {
+                                    @RequestParam String status) {
 
         return adminService.updateBlogStatus(blogId, status);
     }

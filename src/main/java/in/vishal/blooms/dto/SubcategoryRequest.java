@@ -17,6 +17,9 @@ public class SubcategoryRequest {
         this.subCategoryUrl = subCategoryUrl;
     }
 
+    public SubcategoryRequest() {
+    }
+
     public String getCategoryId() {
         return categoryId;
     }

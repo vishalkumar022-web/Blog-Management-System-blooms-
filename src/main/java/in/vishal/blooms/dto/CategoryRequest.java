@@ -10,6 +10,9 @@ public class CategoryRequest {
         return id;
     }
 
+    public CategoryRequest() {
+    }
+
     public CategoryRequest(String title, String id, String desc, String categoryUrl) {
         this.title = title;
         this.id = id;

@@ -24,7 +24,7 @@ public class SubCategory {
         this.url = url;
     }
 
-    private Status Status;
+    private String Status;
 
     private String createdBy;
     private LocalDateTime createdDTTM;
@@ -69,11 +69,11 @@ public class SubCategory {
         this.active = active;
     }
 
-    public Status getStatus() {
+    public String getStatus() {
         return Status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(String status) {
         Status = status;
     }
 

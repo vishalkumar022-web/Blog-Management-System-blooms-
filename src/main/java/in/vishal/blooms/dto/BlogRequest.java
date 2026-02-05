@@ -1,6 +1,7 @@
 package in.vishal.blooms.dto;
 
-import java.sql.Timestamp;
+
+import java.time.LocalDateTime;
 
 public class BlogRequest {
 
@@ -16,12 +17,12 @@ public class BlogRequest {
 
     private String blogAuthorId;
 
-    private Timestamp blogCreatedDTTM;
+    private LocalDateTime blogCreatedDTTM;
 
     private String blogCategoryId; ;
     private String blogSubcategoryId;
 
-    public BlogRequest(String blogId, String blogTitle, String blogDescription, String blogContent, String blogStatus, String blogAuthorId, Timestamp blogCreatedDTTM, String blogCategoryId, String blogSubcategoryId) {
+    public BlogRequest(String blogId, String blogTitle, String blogDescription, String blogContent, String blogStatus, String blogAuthorId, LocalDateTime blogCreatedDTTM, String blogCategoryId, String blogSubcategoryId) {
         this.blogId = blogId;
         this.blogTitle = blogTitle;
         this.blogDescription = blogDescription;
@@ -56,11 +57,11 @@ public class BlogRequest {
         this.blogCategoryId = blogCategoryId;
     }
 
-    public Timestamp getblogCreatedDTTM() {
+    public LocalDateTime getblogCreatedDTTM() {
         return blogCreatedDTTM;
     }
 
-    public void setblogCreatedDTTM(Timestamp blogCreatedDTTM) {
+    public void setblogCreatedDTTM(LocalDateTime blogCreatedDTTM) {
         this.blogCreatedDTTM = blogCreatedDTTM;
     }
 

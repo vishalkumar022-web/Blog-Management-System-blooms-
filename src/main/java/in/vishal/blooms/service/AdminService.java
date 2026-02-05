@@ -188,7 +188,7 @@ public class AdminService {
 
 
 
-    public boolean updateCategoryStatus(String categoryId, Status status) {
+    public boolean updateCategoryStatus(String categoryId, String status) {
 
         Optional<Category> optionalCategory =
                 categoryRepository.findById(categoryId);
@@ -239,7 +239,7 @@ public class AdminService {
     }
 
 
-    public boolean updateSubCategoryStatus(String subCategoryId, Status status) {
+    public boolean updateSubCategoryStatus(String subCategoryId, String  status) {
 
         Optional<SubCategory> optionalSubCategory =
                 subCategoryRepository.findById(subCategoryId);
@@ -290,7 +290,7 @@ public class AdminService {
 
 
 
-    public boolean updateBlogStatus(String blogId, Status status) {
+    public boolean updateBlogStatus(String blogId, String status) {
 
         Optional<Blog> optionalBlog = blogRepository.findById(blogId);
 

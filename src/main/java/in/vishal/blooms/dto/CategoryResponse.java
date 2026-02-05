@@ -8,13 +8,13 @@ public class CategoryResponse {
     private String title;
     private String desc;
     private String categoryUrl;
-private Status status;
+private String status;
 
-    public Status getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

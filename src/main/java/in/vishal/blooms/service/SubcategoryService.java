@@ -49,7 +49,7 @@ public class SubcategoryService {
         sc.setCategoryId(subCategoryRequest.getCategoryId());
         sc.setId(String.valueOf(System.currentTimeMillis()));
         sc.setActive(true);
-        sc.setStatus(Status.INREVIEW);
+        sc.setStatus(Status.INREVIEW.getDisplayName());
         sc.setCreatedBy("ADMIN");
         sc.setCreatedDTTM(LocalDateTime.now());
         subCategoryRepository.save(sc);
