@@ -18,7 +18,7 @@ public class BlogRequest {
 
     private Timestamp blogCreatedDTTM;
 
-    private String blogCategoryId; ;
+    private String blogCategoryId;
     private String blogSubcategoryId;
 
     public BlogRequest(String blogId, String blogTitle, String blogDescription, String blogContent, String blogStatus, String blogAuthorId, Timestamp blogCreatedDTTM, String blogCategoryId, String blogSubcategoryId) {
