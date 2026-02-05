@@ -8,7 +8,7 @@ public class CategoryResponse {
     private String title;
     private String desc;
     private String categoryUrl;
-private String status;
+    private String status;
 
     public String getStatus() {
         return status;

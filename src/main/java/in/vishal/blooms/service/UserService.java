@@ -97,9 +97,9 @@ public class UserService {
 
         if(user.getRole()==Role.USER){
             user.setActive(false);
-        userRepository.save(user);
-        return true ;
-    }
+            userRepository.save(user);
+            return true ;
+        }
         return false;
 
     }
@@ -117,16 +117,16 @@ public class UserService {
 
         User user = optionalUser.get();
 
-if(user.getRole()!=Role.ADMIN) {
-    user.setName(userRequest.getName());
-    user.setEmail(userRequest.getEmail());
-    user.setPassword(userRequest.getPassword());
-    user.setUserName(userRequest.getUserName());
-    user.setProfileUrl(userRequest.getProfileUrl());
-    user.setPhoneNumber(userRequest.getPhoneNumber());
-    user.setRole(userRequest.getRole());
-    userRepository.save(user);
-}
+        if(user.getRole()!=Role.ADMIN) {
+            user.setName(userRequest.getName());
+            user.setEmail(userRequest.getEmail());
+            user.setPassword(userRequest.getPassword());
+            user.setUserName(userRequest.getUserName());
+            user.setProfileUrl(userRequest.getProfileUrl());
+            user.setPhoneNumber(userRequest.getPhoneNumber());
+            user.setRole(userRequest.getRole());
+            userRepository.save(user);
+        }
         userResponse.setUserName(user.getUserName());
         userResponse.setUserId(user.getId());
         userResponse.setName(user.getName());

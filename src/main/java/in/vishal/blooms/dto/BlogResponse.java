@@ -11,7 +11,7 @@ public class BlogResponse {
     private String subCategoryName;
 
     private String authorId;
-private String status;
+    private String status;
 
     public String getStatus() {
         return status;

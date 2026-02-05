@@ -10,7 +10,7 @@ public class SubCategoryResponse {
     private String subCategoryTittle;
     private String subCategoryDesc;
     private String subCategoryUrl;
-private String status;
+    private String status;
 
     public String getStatus() {
         return status;

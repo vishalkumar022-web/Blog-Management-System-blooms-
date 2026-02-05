@@ -36,11 +36,10 @@ public class BlogService {
 
     // Create a Blog here :--
 
-    // Inside BlogService.java
+    public void createBlog(BlogRequest blogRequest){
 
-public void createBlog(BlogRequest blogRequest) {
+        boolean categoryExists = false;
 
-<<<<<<< HEAD
         Optional<Category> optionalCategory= categoryRepository.findById(blogRequest.getblogCategoryId());
 
         if(optionalCategory.isPresent()){
@@ -103,44 +102,7 @@ public void createBlog(BlogRequest blogRequest) {
         blogRepository.save(blog);
 
         System.out.println("Blog created successfully");
-=======
-    // 1️⃣ Validate Category Exists
-    if (!categoryRepository.existsById(blogRequest.getblogCategoryId())) {
-        throw new RuntimeException("Invalid Category ID");
->>>>>>> 8e3bb86d203d6edc6e889604ded05835a13ed44c
     }
-
-    // 2️⃣ Validate SubCategory Exists & Belongs to Category
-    // (Mapping table ki zarurat nahi hai)
-    Optional<SubCategory> subCatOptional = subCategoryRepository.findById(blogRequest.getblogSubcategoryId());
-    
-    if (subCatOptional.isEmpty()) {
-        throw new RuntimeException("Invalid SubCategory ID");
-    }
-    
-    SubCategory subCategory = subCatOptional.get();
-    // Check: Kya ye subcategory waqai ussi category ki hai?
-    if (!subCategory.getCategoryId().equals(blogRequest.getblogCategoryId())) {
-        throw new RuntimeException("SubCategory does not belong to the selected Category");
-    }
-
-    // 3️⃣ Create Blog
-    Blog blog = new Blog();
-    blog.setId(String.valueOf(System.currentTimeMillis()));
-    blog.setTitle(blogRequest.getblogTitle());
-    blog.setDescription(blogRequest.getblogDescription());
-    blog.setContent(blogRequest.getblogContent());
-    blog.setCategoryId(blogRequest.getblogCategoryId());
-    blog.setSubcategoryId(blogRequest.getblogSubcategoryId());
-    blog.setAuthorId(blogRequest.getblogAuthorId()); 
-
-    blog.setActive(true);
-    blog.setCreatedDTTM(LocalDateTime.now());
-    blog.setStatus(Status.INREVIEW); 
-
-    blogRepository.save(blog);
-    System.out.println("✅ Blog created successfully");
-}
 
     // read the blog :--
     public List<BlogResponse> getBlogs() {
