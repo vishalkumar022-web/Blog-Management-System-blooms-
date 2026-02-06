@@ -97,7 +97,7 @@ private final UserRepository userRepository;
 
         blog.setActive(true);
         blog.setCreatedDTTM(LocalDateTime.now());
-        blog.setStatus(Status.PUBLISHED.getDisplayName());
+        blog.setStatus(Status.INREVIEW.getDisplayName());
 
         blog.setId(String.valueOf(System.currentTimeMillis()));
 
@@ -125,7 +125,7 @@ private final UserRepository userRepository;
             blogResponse.setDescription(blog.getDescription());
             blogResponse.setContent(blog.getContent());
             blogResponse.setAuthorId(blog.getAuthorId());
-            blogResponse.setStatus(Status.PUBLISHED.getDisplayName());
+            blogResponse.setStatus(blog.getStatus());
 
             // ===== CATEGORY NAME =====
             Optional<Category> optionalCategory =

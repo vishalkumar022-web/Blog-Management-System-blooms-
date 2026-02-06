@@ -36,7 +36,7 @@ public class BlogCommentService {
             String currentStatus = blogOpt.get().getStatus();
             String requiredStatus = Status.PUBLISHED.getDisplayName();
 
-            if (!currentStatus.equals(requiredStatus)) {
+            if (!currentStatus.equalsIgnoreCase(requiredStatus)) {
                 System.out.println("ERROR: Blog status mismatch. DB has: " + currentStatus + ", Required: " + requiredStatus);
                 return;
             }

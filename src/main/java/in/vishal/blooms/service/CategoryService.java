@@ -75,7 +75,7 @@ public class CategoryService {
                 response.setTitle(category.getName());
                 response.setDesc(category.getDescription());
                 response.setCategoryUrl(category.getImageUrl());
-                response.setStatus(Status.INREVIEW.getDisplayName());
+                response.setStatus(category.getStatus());
                 responses.add(response);
             }
         }

@@ -13,8 +13,6 @@ import java.util.Optional;
 @Service
 public class AdminService {
 
-
-
     private final UserRepository userRepository;
     private final BlogRepository blogRepository;
     private final CategoryRepository categoryRepository;
@@ -31,25 +29,27 @@ public class AdminService {
         this.subCategoryRepository = subCategoryRepository;
     }
 
+    // ================= HELPER METHOD (VALIDATION) =================
+
+    // Ye method check karega ki jo status aa raha hai wo hamare Enum me hai ya nahi
+    private boolean isValidStatus(String status) {
+        for (Status s : Status.values()) {
+            // Agar incoming status (e.g. "Published") match karta hai kisi bhi Enum display name se
+            if (s.getDisplayName().equalsIgnoreCase(status)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     // Get admin by id
     public UserResponse getAdminById(String userId) {
-
         Optional<User> userOptional = userRepository.findById(userId);
-
-        if (userOptional.isEmpty()) {
-            return null;
-        }
-
+        if (userOptional.isEmpty()) return null;
         User user = userOptional.get();
-
-        if (!user.isActive()) {
-            return null;
-        }
-
-        if(user.getRole() != Role.USER){
-            return null;
-        }
+        if (!user.isActive()) return null;
+        if(user.getRole() != Role.USER) return null;
 
         UserResponse userResponse = new UserResponse();
         userResponse.setUserId(user.getId());
@@ -57,7 +57,6 @@ public class AdminService {
         userResponse.setProfileUrl(user.getProfileUrl());
         userResponse.setName(user.getName());
         userResponse.setUserName(user.getUserName());
-        //  password intentionally NOT set
         userResponse.setPhoneNumber(user.getPhoneNumber());
         userResponse.setRole(user.getRole());
         return userResponse;
@@ -65,24 +64,19 @@ public class AdminService {
 
 
     // GetAll admins
-
     public List<UserResponse> getAdmins(){
-
         List<User>userList = userRepository.findAll();
         List<UserResponse> userResponses = new ArrayList<>();
         for(User user : userList){
             if(user.isActive() && user.getRole() == Role.ADMIN){
                 UserResponse userResponse = new UserResponse();
-
                 userResponse.setUserId(user.getId());
                 userResponse.setEmail(user.getEmail());
                 userResponse.setProfileUrl(user.getProfileUrl());
                 userResponse.setName(user.getName());
-
                 userResponse.setUserName(user.getUserName());
                 userResponse.setPhoneNumber(user.getPhoneNumber());
                 userResponses.add(userResponse);
-
             }
         }
         return userResponses;
@@ -90,17 +84,13 @@ public class AdminService {
 
 
     // Update admin
-
-
     public UserResponse updateAdmin(UserRequest userRequest ){
-
         UserResponse userResponse = new UserResponse();
         if(userRequest.getUserId()==null){
             System.out.println("this user id is not exist so, you cannot update this user data ");
             return userResponse;
         }
         Optional<User> optionalUser = userRepository.findById(userRequest.getUserId());
-
         User user = optionalUser.get();
 
         if(user.getRole()==Role.ADMIN) {
@@ -117,9 +107,7 @@ public class AdminService {
         userResponse.setUserId(user.getId());
         userResponse.setName(user.getName());
         userResponse.setEmail(user.getEmail());
-
         userResponse.setProfileUrl(user.getProfileUrl());
-
         return userResponse;
     }
 
@@ -130,26 +118,17 @@ public class AdminService {
     }
 
     public User getUserById(String userId) {
-
         Optional<User> optionalUser = userRepository.findById(userId);
-
-        if (optionalUser.isEmpty()) {
-            return null;
-        }
-
-        return optionalUser.get();
+        return optionalUser.orElse(null);
     }
 
     public boolean deleteUserById(String userId) {
-
         Optional<User> optionalUser = userRepository.findById(userId);
-
         if (optionalUser.isEmpty()) {
             return false;
         }
-
         User user = optionalUser.get();
-        user.setActive(false);   // same as your USER delete logic
+        user.setActive(false);
         userRepository.save(user);
         return true;
     }
@@ -162,36 +141,29 @@ public class AdminService {
     }
 
     public Category getCategoryById(String categoryId) {
-
-        Optional<Category> optionalCategory =
-                categoryRepository.findById(categoryId);
-
-        if (optionalCategory.isEmpty()) {
-            return null;
-        }
-
-        return optionalCategory.get();
+        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
+        return optionalCategory.orElse(null);
     }
 
     public boolean deleteCategoryById(String categoryId) {
-
-        Optional<Category> optionalCategory =
-                categoryRepository.findById(categoryId);
-
+        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
         if (optionalCategory.isEmpty()) {
             return false;
         }
-
         categoryRepository.deleteById(categoryId);
         return true;
     }
 
-
-
     public boolean updateCategoryStatus(String categoryId, String status) {
 
-        Optional<Category> optionalCategory =
-                categoryRepository.findById(categoryId);
+        // CHANGE START: Validation Check
+        if (!isValidStatus(status)) {
+            System.out.println("Invalid Status Provided: " + status);
+            return false; // Status update nahi hoga
+        }
+        // CHANGE END
+
+        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
 
         if (optionalCategory.isEmpty()) {
             return false;
@@ -205,8 +177,6 @@ public class AdminService {
     }
 
 
-
-
 // ================= SUB CATEGORY =================
 
     public List<SubCategory> getAllSubCategories() {
@@ -214,26 +184,15 @@ public class AdminService {
     }
 
     public SubCategory getSubCategoryById(String subCategoryId) {
-
-        Optional<SubCategory> optionalSubCategory =
-                subCategoryRepository.findById(subCategoryId);
-
-        if (optionalSubCategory.isEmpty()) {
-            return null;
-        }
-
-        return optionalSubCategory.get();
+        Optional<SubCategory> optionalSubCategory = subCategoryRepository.findById(subCategoryId);
+        return optionalSubCategory.orElse(null);
     }
 
     public boolean deleteSubCategoryById(String subCategoryId) {
-
-        Optional<SubCategory> optionalSubCategory =
-                subCategoryRepository.findById(subCategoryId);
-
+        Optional<SubCategory> optionalSubCategory = subCategoryRepository.findById(subCategoryId);
         if (optionalSubCategory.isEmpty()) {
             return false;
         }
-
         subCategoryRepository.deleteById(subCategoryId);
         return true;
     }
@@ -241,8 +200,14 @@ public class AdminService {
 
     public boolean updateSubCategoryStatus(String subCategoryId, String  status) {
 
-        Optional<SubCategory> optionalSubCategory =
-                subCategoryRepository.findById(subCategoryId);
+        // CHANGE START: Validation Check
+        if (!isValidStatus(status)) {
+            System.out.println("Invalid Status Provided: " + status);
+            return false;
+        }
+        // CHANGE END
+
+        Optional<SubCategory> optionalSubCategory = subCategoryRepository.findById(subCategoryId);
 
         if (optionalSubCategory.isEmpty()) {
             return false;
@@ -263,34 +228,27 @@ public class AdminService {
     }
 
     public Blog getBlogById(String blogId) {
-
-        Optional<Blog> optionalBlog =
-                blogRepository.findById(blogId);
-
-        if (optionalBlog.isEmpty()) {
-            return null;
-        }
-
-        return optionalBlog.get();
+        Optional<Blog> optionalBlog = blogRepository.findById(blogId);
+        return optionalBlog.orElse(null);
     }
 
     public boolean deleteBlogById(String blogId) {
-
-        Optional<Blog> optionalBlog =
-                blogRepository.findById(blogId);
-
+        Optional<Blog> optionalBlog = blogRepository.findById(blogId);
         if (optionalBlog.isEmpty()) {
             return false;
         }
-
         blogRepository.deleteById(blogId);
         return true;
-
     }
 
-
-
     public boolean updateBlogStatus(String blogId, String status) {
+
+        // CHANGE START: Validation Check
+        if (!isValidStatus(status)) {
+            System.out.println("Invalid Status Provided: " + status);
+            return false;
+        }
+        // CHANGE END
 
         Optional<Blog> optionalBlog = blogRepository.findById(blogId);
 
@@ -304,7 +262,5 @@ public class AdminService {
 
         return true;
     }
-
-
 
 }

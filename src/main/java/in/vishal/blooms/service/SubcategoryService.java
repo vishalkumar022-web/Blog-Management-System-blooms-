@@ -111,7 +111,7 @@ public class SubcategoryService {
                 response.setSubCategoryDesc(subCategory.getDescription());
                 response.setSubCategoryUrl(subCategory.getUrl());
                 response.setCategoryId(subCategory.getCategoryId());
-                response.setStatus(Status.INREVIEW.getDisplayName());
+                response.setStatus(subCategory.getStatus());
                 subCategoryRespons.add(response);
             }
         }
