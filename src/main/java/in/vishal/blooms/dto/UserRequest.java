@@ -11,13 +11,13 @@ public class UserRequest {
     private String profileUrl;
     private String password;
     private String phoneNumber;
-    private Role role ;
+    private String role ;
 
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
     }
 

@@ -38,7 +38,7 @@ public class UserService {
             return null;
         }
 
-        if(user.getRole() != Role.ADMIN){
+        if(user.getRole() != Role.ADMIN.getDisplayName()){
             return null;
         }
 
@@ -63,7 +63,7 @@ public class UserService {
         List<User>userList = userRepository.findAll();
         List<UserResponse> userResponses = new ArrayList<>();
         for(User user : userList){
-            if(user.isActive() && user.getRole() != Role.ADMIN){
+            if(user.isActive() && user.getRole() != Role.ADMIN.getDisplayName()){
                 UserResponse userResponse = new UserResponse();
 
                 userResponse.setUserId(user.getId());
@@ -95,7 +95,7 @@ public class UserService {
 
         User user = optionalUser.get();
 
-        if(user.getRole()==Role.USER){
+        if(user.getRole()==Role.USER.getDisplayName()){
             user.setActive(false);
             userRepository.save(user);
             return true ;
@@ -117,7 +117,7 @@ public class UserService {
 
         User user = optionalUser.get();
 
-        if(user.getRole()!=Role.ADMIN) {
+        if(user.getRole()!=Role.ADMIN.getDisplayName()) {
             user.setName(userRequest.getName());
             user.setEmail(userRequest.getEmail());
             user.setPassword(userRequest.getPassword());
@@ -132,6 +132,7 @@ public class UserService {
         userResponse.setName(user.getName());
         userResponse.setEmail(user.getEmail());
         userResponse.setProfileUrl(user.getProfileUrl());
+        userResponse.setRole(user.getRole());
 
         return userResponse;
     }

@@ -14,13 +14,13 @@ public class User {
     private String password;
     private boolean isActive ;
     private String phoneNumber;
-    private Role role ;
+    private String role ;
 
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
     }
 

@@ -11,7 +11,7 @@ public class UserResponse {
     private String profileUrl;
     private String phoneNumber;
 
-    private Role role;
+    private String role;
 
     private String token;   // 🔥 JWT TOKEN
 
@@ -66,11 +66,11 @@ public class UserResponse {
         this.phoneNumber = phoneNumber;
     }
 
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
     }
 

@@ -3,6 +3,7 @@ package in.vishal.blooms.service;
 import in.vishal.blooms.dto.LoginRequest;
 import in.vishal.blooms.dto.UserRequest;
 import in.vishal.blooms.dto.UserResponse;
+import in.vishal.blooms.models.Role;
 import in.vishal.blooms.models.User;
 import in.vishal.blooms.repository.UserRepository;
 import in.vishal.blooms.security.JwtUtil;
@@ -20,10 +21,33 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
+    // ================= HELPER METHOD (VALIDATION) =================
+    // Ye check karega ki role "user" ya "admin" hi ho, aur kuch nahi.
+    private boolean isValidRole(String role) {
+        if (role == null) return false;
+
+        for (Role r : Role.values()) {
+            // Agar incoming role (e.g. "admin") match karta hai Enum display name se
+            if (r.getDisplayName().equalsIgnoreCase(role)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // =========================
     // REGISTER USER
     // =========================
     public void registerUser(UserRequest userRequest) {
+
+        // 1️⃣ Validation Check: Role sahi hai ya nahi?
+        if (!isValidRole(userRequest.getRole())) {
+            // Agar role galat hai toh yahin rok do aur error do
+
+            System.out.println("Invalid role given. Allowed roles: user, admin");
+
+            throw new RuntimeException("Invalid role given. Allowed roles: user, admin");
+        }
 
         User user = new User();
         user.setId(String.valueOf(System.currentTimeMillis()));
@@ -33,12 +57,14 @@ public class AuthService {
         user.setProfileUrl(userRequest.getProfileUrl());
         user.setPassword(userRequest.getPassword());
         user.setPhoneNumber(userRequest.getPhoneNumber());
+
+        // Ab hum sure hain ki role sahi hai, toh set kar do
         user.setRole(userRequest.getRole());
+
         user.setActive(true);
 
         userRepository.save(user);
     }
-
     // =========================
     // LOGIN USER + JWT TOKEN
     // =========================
@@ -61,10 +87,11 @@ public class AuthService {
             throw new RuntimeException("Wrong password");
         }
 
+
         // 4️⃣ token generate
         String token = jwtUtil.generateToken(
                 user.getId(),
-                user.getRole().name()
+                user.getRole()
         );
 
         // 5️⃣ response

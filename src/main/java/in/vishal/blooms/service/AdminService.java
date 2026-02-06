@@ -49,7 +49,7 @@ public class AdminService {
         if (userOptional.isEmpty()) return null;
         User user = userOptional.get();
         if (!user.isActive()) return null;
-        if(user.getRole() != Role.USER) return null;
+        if(user.getRole() != Role.USER.getDisplayName()) return null;
 
         UserResponse userResponse = new UserResponse();
         userResponse.setUserId(user.getId());
@@ -68,7 +68,7 @@ public class AdminService {
         List<User>userList = userRepository.findAll();
         List<UserResponse> userResponses = new ArrayList<>();
         for(User user : userList){
-            if(user.isActive() && user.getRole() == Role.ADMIN){
+            if(user.isActive() && user.getRole() == Role.ADMIN.getDisplayName()){
                 UserResponse userResponse = new UserResponse();
                 userResponse.setUserId(user.getId());
                 userResponse.setEmail(user.getEmail());
@@ -93,7 +93,7 @@ public class AdminService {
         Optional<User> optionalUser = userRepository.findById(userRequest.getUserId());
         User user = optionalUser.get();
 
-        if(user.getRole()==Role.ADMIN) {
+        if(user.getRole()==Role.ADMIN.getDisplayName()) {
             user.setName(userRequest.getName());
             user.setEmail(userRequest.getEmail());
             user.setPassword(userRequest.getPassword());
