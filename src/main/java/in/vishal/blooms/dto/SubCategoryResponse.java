@@ -1,9 +1,6 @@
 package in.vishal.blooms.dto;
 
-import in.vishal.blooms.models.Status;
-
 public class SubCategoryResponse {
-
 
     private String categoryId;
     private String subCategoryId;
@@ -21,7 +18,6 @@ public class SubCategoryResponse {
     }
 
     public SubCategoryResponse() {
-
     }
 
     public String getCategoryId() {

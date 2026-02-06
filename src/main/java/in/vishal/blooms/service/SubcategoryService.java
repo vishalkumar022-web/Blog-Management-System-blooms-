@@ -11,7 +11,6 @@ import in.vishal.blooms.models.Status;
 import in.vishal.blooms.models.SubCategory;
 import org.springframework.stereotype.Service;
 
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,39 +49,26 @@ public class SubcategoryService {
         sc.setId(String.valueOf(System.currentTimeMillis()));
         sc.setActive(true);
         sc.setStatus(Status.INREVIEW.getDisplayName());
-        sc.setCreatedBy("ADMIN");
+
         sc.setCreatedDTTM(LocalDateTime.now());
         subCategoryRepository.save(sc);
-        System.out.println("SubCategory added under Category ID: " + match.getId());
-
 
         CategoryMapping foundMapping = null;
-
         Optional<CategoryMapping> categoryMapping = categoryMappingRepository.findById(sc.getCategoryId());
-
         if (categoryMapping.isPresent()) {
             foundMapping = categoryMapping.get();
         }
-
-
         if (foundMapping == null) {
             foundMapping = new CategoryMapping();
             foundMapping.setCategoryId(subCategoryRequest.getCategoryId());
         }
-
-
         foundMapping.getSubCategoryIdsList().add(sc.getId());
-
         categoryMappingRepository.save(foundMapping);
-
-        System.out.println("✅ SubCategory created & mapped successfully");
     }
 
     public SubCategoryResponse getSubCategoryById(String id) {
         Optional<SubCategory> optionalSubCategory = subCategoryRepository.findById(id);
-        if (optionalSubCategory.isEmpty()) {
-            return null;
-        }
+        if (optionalSubCategory.isEmpty()) return null;
         SubCategory subCategory = optionalSubCategory.get();
         SubCategoryResponse response = new SubCategoryResponse();
         response.setSubCategoryId(subCategory.getId());
@@ -90,21 +76,16 @@ public class SubcategoryService {
         response.setSubCategoryDesc(subCategory.getDescription());
         response.setSubCategoryUrl(subCategory.getUrl());
         response.setCategoryId(subCategory.getCategoryId());
-        response.setStatus(Status.INREVIEW.getDisplayName());
-
+        response.setStatus(subCategory.getStatus());
         return response;
     }
-    // Read all :---
+
+    // Read all
     public List<SubCategoryResponse> getSubCategories() {
-
         List<SubCategoryResponse> subCategoryRespons = new ArrayList<>();
-
         List<SubCategory> subCategoryList = subCategoryRepository.findAll();
-
         for (SubCategory subCategory : subCategoryList) {
-
             if (subCategory.getActive()) {
-
                 SubCategoryResponse response = new SubCategoryResponse();
                 response.setSubCategoryId(subCategory.getId());
                 response.setSubCategoryTittle(subCategory.getName());
@@ -118,11 +99,30 @@ public class SubcategoryService {
         return subCategoryRespons;
     }
 
+    // ✅ FIXED: Ab ye 'IgnoreCase' wala method call karega
+    public List<SubCategoryResponse> searchSubCategoriesByTitle(String title) {
+        List<SubCategory> list = subCategoryRepository.findByNameContainingIgnoreCaseAndStatusIgnoreCaseAndActive(
+                title,
+                Status.PUBLISHED.getDisplayName(),
+                true
+        );
+        List<SubCategoryResponse> responses = new ArrayList<>();
+        for (SubCategory sc : list) {
+            SubCategoryResponse response = new SubCategoryResponse();
+            response.setSubCategoryId(sc.getId());
+            response.setSubCategoryTittle(sc.getName());
+            response.setSubCategoryDesc(sc.getDescription());
+            response.setSubCategoryUrl(sc.getUrl());
+            response.setCategoryId(sc.getCategoryId());
+            response.setStatus(sc.getStatus());
+            responses.add(response);
+        }
+        return responses;
+    }
+
     public Boolean deleteSubCategory(String Id) {
         Optional<SubCategory> optionalSubCategory = subCategoryRepository.findById(Id);
-        if (optionalSubCategory.isEmpty()) {
-            return false;
-        }
+        if (optionalSubCategory.isEmpty()) return false;
         SubCategory subCategory = optionalSubCategory.get();
         subCategory.setActive(false);
         subCategoryRepository.save(subCategory);
@@ -130,14 +130,10 @@ public class SubcategoryService {
     }
 
     public SubCategoryResponse updateSubCategory(SubcategoryRequest request) {
-        if (request.getSubCategoryId() == null) {
-            return null;
-        }
+        if (request.getSubCategoryId() == null) return null;
         SubCategoryResponse subCategoryResponse = new SubCategoryResponse();
         Optional<SubCategory> optionalSubCategory = subCategoryRepository.findById(request.getSubCategoryId());
-        if (optionalSubCategory.isEmpty()) {
-            return null;
-        }
+        if (optionalSubCategory.isEmpty()) return null;
         SubCategory subCategory = optionalSubCategory.get();
         subCategory.setName(request.getSubCategoryTittle());
         subCategory.setDescription(request.getSubCategoryDesc());

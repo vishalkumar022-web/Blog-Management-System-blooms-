@@ -8,7 +8,6 @@ public class SubcategoryRequest {
     private String subCategoryDesc;
     private String subCategoryUrl;
 
-
     public SubcategoryRequest(String category_id, String subCategoryId, String subCategoryTittle, String subCategoryDesc, String subCategoryUrl) {
         this.categoryId = category_id;
         this.subCategoryId = subCategoryId;

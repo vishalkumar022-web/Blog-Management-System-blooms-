@@ -2,8 +2,6 @@ package in.vishal.blooms.models;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-
 import java.time.LocalDateTime;
 
 @Document(collection = "SubCategory")
@@ -13,18 +11,11 @@ public class SubCategory {
     private String categoryId;
     private String name;
     private String description;
-    private String url ;
+    private String url;
     private boolean active;
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    private String Status;
+    // ✅ FIXED: Capital 'S' ko Small 's' kar diya
+    private String status;
 
     private String createdBy;
     private LocalDateTime createdDTTM;
@@ -61,6 +52,14 @@ public class SubCategory {
         this.description = description;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public boolean getActive() {
         return active;
     }
@@ -70,11 +69,11 @@ public class SubCategory {
     }
 
     public String getStatus() {
-        return Status;
+        return status;
     }
 
     public void setStatus(String status) {
-        Status = status;
+        this.status = status;
     }
 
     public String getCreatedBy() {
