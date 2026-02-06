@@ -1,5 +1,7 @@
 package in.vishal.blooms.dto;
 
+import java.util.List;
+
 public class BlogResponse {
 
     private String blogId;
@@ -12,6 +14,44 @@ public class BlogResponse {
 
     private String authorId;
     private String status;
+
+    private long likeCount;
+    private List<String> likedByUsers;
+
+    private long commentCount;
+    private List<CommentResponse> comments;
+
+    public long getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(long likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    public List<String> getLikedByUsers() {
+        return likedByUsers;
+    }
+
+    public void setLikedByUsers(List<String> likedByUsers) {
+        this.likedByUsers = likedByUsers;
+    }
+
+    public long getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(long commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    public List<CommentResponse> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CommentResponse> comments) {
+        this.comments = comments;
+    }
 
     public String getStatus() {
         return status;

@@ -36,6 +36,17 @@ public class BlogController {
 
         return blogService.getBlogs();
     }
+
+
+    @GetMapping("/search")
+    public List<BlogResponse> searchBlogs(@RequestParam String title) {
+        return blogService.searchBlogsByTitle(title);
+    }
+
+
+
+
+
     @PutMapping
     public BlogResponse updateBlog(@RequestBody BlogRequest request) {
 

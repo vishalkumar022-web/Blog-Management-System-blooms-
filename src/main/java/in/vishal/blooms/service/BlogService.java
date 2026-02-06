@@ -1,9 +1,7 @@
 package in.vishal.blooms.service;
 
-import in.vishal.blooms.repository.BlogRepository;
-import in.vishal.blooms.repository.CategoryMappingRepository;
-import in.vishal.blooms.repository.CategoryRepository;
-import in.vishal.blooms.repository.SubCategoryRepository;
+import in.vishal.blooms.dto.CommentResponse;
+import in.vishal.blooms.repository.*;
 import in.vishal.blooms.dto.BlogRequest;
 import in.vishal.blooms.dto.BlogResponse;
 import in.vishal.blooms.models.*;
@@ -16,19 +14,23 @@ import java.util.List;
 import java.util.Optional;
 @Service
 public class BlogService {
-
+private final UserRepository userRepository;
+    private final BlogLikeRepository blogLikeRepository;
+    private final BlogCommentRepository blogCommentRepository;
     private final BlogRepository blogRepository;
     private final CategoryMappingRepository categoryMappingRepository;
     private final CategoryRepository categoryRepository;
     private final SubCategoryRepository subCategoryRepository;
 
 
-    public BlogService(BlogRepository blogRepository, CategoryRepository categoryRepository, SubCategoryRepository subCategoryRepository , CategoryMappingRepository categoryMappingRepository){
+    public BlogService(BlogRepository blogRepository, CategoryRepository categoryRepository, SubCategoryRepository subCategoryRepository , CategoryMappingRepository categoryMappingRepository  , BlogCommentRepository blogCommentRepository , BlogLikeRepository blogLikeRepository , UserRepository userRepository) {
         this.blogRepository = blogRepository ;
         this.categoryMappingRepository = categoryMappingRepository;
         this.categoryRepository = categoryRepository;
         this.subCategoryRepository = subCategoryRepository ;
-
+        this.blogLikeRepository = blogLikeRepository;
+        this.blogCommentRepository = blogCommentRepository;
+        this.userRepository = userRepository;
     }
 
 
@@ -95,7 +97,7 @@ public class BlogService {
 
         blog.setActive(true);
         blog.setCreatedDTTM(LocalDateTime.now());
-        blog.setStatus(Status.INREVIEW.getDisplayName());
+        blog.setStatus(Status.PUBLISHED.getDisplayName());
 
         blog.setId(String.valueOf(System.currentTimeMillis()));
 
@@ -110,38 +112,143 @@ public class BlogService {
         List<BlogResponse> responses = new ArrayList<>();
 
         List<Blog> blogList = blogRepository.findAll();
+
         for (Blog blog : blogList) {
-            if (blog.getActive()) {
-                BlogResponse blogResponse = new BlogResponse();
-                blogResponse.setBlogId(blog.getId());
-                blogResponse.setTitle(blog.getTitle());
-                blogResponse.setDescription(blog.getDescription());
-                blogResponse.setContent(blog.getContent());
-                blogResponse.setAuthorId(blog.getAuthorId());
-                blogResponse.setStatus(Status.INREVIEW.getDisplayName());
 
-
-
-
-                // category & subcategory name nikalna
-                Optional<Category>optionalCategory = categoryRepository.findById(blog.getCategoryId());
-                if (optionalCategory.isPresent()) {
-                    Category category = optionalCategory.get();
-                    blogResponse.setCategoryName(category.getName());
-                }
-                Optional<SubCategory>optionalSubCategory = subCategoryRepository.findById(blog.getSubcategoryId());
-                if (optionalSubCategory.isPresent()) {
-                    SubCategory sc = optionalSubCategory.get();
-                    blogResponse.setSubCategoryName(sc.getName());
-
-                }
-
-                responses.add(blogResponse);
-
+            if (!blog.getActive()) {
+                continue;
             }
+
+            BlogResponse blogResponse = new BlogResponse();
+            blogResponse.setBlogId(blog.getId());
+            blogResponse.setTitle(blog.getTitle());
+            blogResponse.setDescription(blog.getDescription());
+            blogResponse.setContent(blog.getContent());
+            blogResponse.setAuthorId(blog.getAuthorId());
+            blogResponse.setStatus(Status.PUBLISHED.getDisplayName());
+
+            // ===== CATEGORY NAME =====
+            Optional<Category> optionalCategory =
+                    categoryRepository.findById(blog.getCategoryId());
+
+            if (optionalCategory.isPresent()) {
+                Category category = optionalCategory.get();
+                blogResponse.setCategoryName(category.getName());
+            }
+
+            // ===== SUBCATEGORY NAME =====
+            Optional<SubCategory> optionalSubCategory =
+                    subCategoryRepository.findById(blog.getSubcategoryId());
+
+            if (optionalSubCategory.isPresent()) {
+                SubCategory subCategory = optionalSubCategory.get();
+                blogResponse.setSubCategoryName(subCategory.getName());
+            }
+
+            // ===== LIKES =====
+            List<String> likedUserNames = new ArrayList<>();
+
+            List<BlogLike> blogLikes =
+                    blogLikeRepository.findByBlogId(blog.getId());
+
+            for (BlogLike blogLike : blogLikes) {
+
+                Optional<User> optionalUser =
+                        userRepository.findById(blogLike.getUserId());
+
+                if (optionalUser.isPresent()) {
+                    User user = optionalUser.get();
+                    likedUserNames.add(user.getUserName());
+                }
+            }
+
+            blogResponse.setLikedByUsers(likedUserNames);
+            blogResponse.setLikeCount(likedUserNames.size());
+
+            // ===== COMMENTS =====
+            List<CommentResponse> commentResponses = new ArrayList<>();
+
+            List<BlogComment> comments =
+                    blogCommentRepository.findByBlogId(blog.getId());
+
+            for (BlogComment comment : comments) {
+
+                CommentResponse cr = new CommentResponse();
+                cr.setCommentText(comment.getCommentText());
+
+                Optional<User> optionalUser =
+                        userRepository.findById(comment.getUserId());
+
+                if (optionalUser.isPresent()) {
+                    User user = optionalUser.get();
+                    cr.setUserName(user.getUserName());
+                }
+
+                commentResponses.add(cr);
+            }
+
+            blogResponse.setComments(commentResponses);
+            blogResponse.setCommentCount(commentResponses.size());
+
+            responses.add(blogResponse);
         }
+
         return responses;
     }
+
+
+
+    // PUBLIC SEARCH BLOG (only PUBLISHED blogs)
+    public List<BlogResponse> searchBlogsByTitle(String title) {
+
+        List<BlogResponse> responses = new ArrayList<>();
+
+        List<Blog> blogList =
+                blogRepository.findByTitleContainingIgnoreCaseAndStatusAndActive(
+                        title,
+                        Status.PUBLISHED.getDisplayName(),
+                        true
+                );
+
+        for (Blog blog : blogList) {
+
+            BlogResponse blogResponse = new BlogResponse();
+
+            blogResponse.setBlogId(blog.getId());
+            blogResponse.setTitle(blog.getTitle());
+            blogResponse.setDescription(blog.getDescription());
+            blogResponse.setContent(blog.getContent());
+            blogResponse.setAuthorId(blog.getAuthorId());
+
+            // category name nikalna
+            Optional<Category> optionalCategory =
+                    categoryRepository.findById(blog.getCategoryId());
+
+            if (optionalCategory.isPresent()) {
+                Category category = optionalCategory.get();
+                blogResponse.setCategoryName(category.getName());
+            }
+
+            // subcategory name nikalna
+            Optional<SubCategory> optionalSubCategory =
+                    subCategoryRepository.findById(blog.getSubcategoryId());
+
+            if (optionalSubCategory.isPresent()) {
+                SubCategory sc = optionalSubCategory.get();
+                blogResponse.setSubCategoryName(sc.getName());
+            }
+
+            responses.add(blogResponse);
+        }
+
+        return responses;
+    }
+
+
+
+
+
+
 
     // Update a Blog here
 

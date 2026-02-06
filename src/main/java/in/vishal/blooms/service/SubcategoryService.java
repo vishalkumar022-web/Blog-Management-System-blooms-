@@ -90,7 +90,8 @@ public class SubcategoryService {
         response.setSubCategoryDesc(subCategory.getDescription());
         response.setSubCategoryUrl(subCategory.getUrl());
         response.setCategoryId(subCategory.getCategoryId());
-        response.setStatus(subCategory.getStatus());
+        response.setStatus(Status.INREVIEW.getDisplayName());
+
         return response;
     }
     // Read all :---
@@ -110,6 +111,7 @@ public class SubcategoryService {
                 response.setSubCategoryDesc(subCategory.getDescription());
                 response.setSubCategoryUrl(subCategory.getUrl());
                 response.setCategoryId(subCategory.getCategoryId());
+                response.setStatus(Status.INREVIEW.getDisplayName());
                 subCategoryRespons.add(response);
             }
         }
