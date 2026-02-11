@@ -63,8 +63,9 @@ const Login = () => {
                         </Button>
                     </Form.Item>
 
-                    <div style={{ textAlign: 'center' }}>
-                        Don't have an account? <Link to="/register">Register now</Link>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
+                        <Link to="/forgot-password" style={{ color: '#1890ff' }}>Forgot password?</Link>
+                        <Link to="/register">Register now</Link>
                     </div>
                 </Form>
             </Card>

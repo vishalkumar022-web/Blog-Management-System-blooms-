@@ -61,4 +61,13 @@ export const deleteUser = (id) => api.delete(`/Admin/usersById?userId=${id}`);
 // --- Dashboard ---
 // stats fetching is handled in component or we can add specific aggregations here if backend supports
 
+// --- User Service (Self) ---
+export const updateSelf = (data) => api.put('/User', data);
+export const deleteSelf = (id) => api.delete(`/User?userId=${id}`);
+
+// --- Forgot Password Service ---
+export const forgotPassword = (email) => api.post('/auth/forgot-password', { email });
+export const verifyOtp = (email, otp) => api.post('/auth/verify-otp', { email, otp });
+export const resetPassword = (email, newPassword) => api.post('/auth/reset-password', { email, newPassword });
+
 export default api;

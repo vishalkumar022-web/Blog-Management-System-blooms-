@@ -9,6 +9,9 @@ import BlogList from './pages/BlogList';
 import UserList from './pages/UserList';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import Profile from './pages/Profile';
+import ErrorBoundary from './components/ErrorBoundary';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
@@ -18,8 +21,20 @@ const App = () => {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#1890ff',
+          colorPrimary: '#6C63FF', // Modern purple/indigo
+          borderRadius: 8,
+          fontFamily: "'Inter', sans-serif",
+          colorBgContainer: '#ffffff',
         },
+        components: {
+          Layout: {
+            bodyBg: '#f0f2f5',
+            headerBg: '#ffffff',
+          },
+          Card: {
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+          }
+        }
       }}
     >
       <AuthProvider>
@@ -28,6 +43,7 @@ const App = () => {
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
 
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
@@ -44,6 +60,11 @@ const App = () => {
                         To be stricter: <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}> ... </Route>
                     */}
                 <Route path="users" element={<UserList />} />
+                <Route path="profile" element={
+                  <ErrorBoundary>
+                    <Profile />
+                  </ErrorBoundary>
+                } />
               </Route>
             </Route>
 

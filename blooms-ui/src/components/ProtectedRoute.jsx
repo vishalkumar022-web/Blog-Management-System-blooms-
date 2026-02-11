@@ -3,7 +3,11 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const ProtectedRoute = ({ allowedRoles }) => {
-    const { currentUser } = useAuth();
+    const { currentUser, loading } = useAuth();
+
+    if (loading) {
+        return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
+    }
 
     if (!currentUser) {
         return <Navigate to="/login" replace />;
