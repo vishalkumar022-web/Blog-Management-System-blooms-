@@ -121,7 +121,7 @@ public class CategoryService {
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by("name").ascending());
 
             // Using Page return from Repository
-            Page<Category> categoryPage = categoryRepository.findByNameContainingIgnoreCaseAndStatusAndActive(
+            Page<Category> categoryPage = categoryRepository.findByNameContainingIgnoreCaseAndStatusIgnoreCaseAndActive(
                     title, Status.PUBLISHED.getDisplayName(), true, pageRequest);
 
             List<Category> categoryList = categoryPage.getContent();

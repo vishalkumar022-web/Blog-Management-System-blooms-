@@ -227,41 +227,35 @@ public class BlogService {
 
 
     // PUBLIC SEARCH BLOG (only PUBLISHED blogs)
+    // PUBLIC SEARCH BLOG (only PUBLISHED blogs)
     public ApiResponse<List<BlogResponse>> searchBlogsByTitle(String title, int page, int size) {
         log.info("Searching blogs with title containing: {}, page: {}, size: {}", title, page, size);
 
         try {
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by("title").ascending());
-
             List<BlogResponse> responses = new ArrayList<>();
 
-            Page<Blog> blogPage = blogRepository.findByTitleContainingIgnoreCaseAndStatusAndActive(title, Status.PUBLISHED.getDisplayName(), true, pageRequest);
+            // ✅ FIX APPLIED HERE: Used the new IgnoreCase method and trimmed the title
+            Page<Blog> blogPage = blogRepository.findByTitleContainingIgnoreCaseAndStatusIgnoreCaseAndActive(
+                    title.trim(), Status.PUBLISHED.getDisplayName(), true, pageRequest);
 
             List<Blog> blogList = blogPage.getContent();
 
             for (Blog blog : blogList) {
-
                 BlogResponse blogResponse = new BlogResponse();
-
                 blogResponse.setBlogId(blog.getId());
                 blogResponse.setTitle(blog.getTitle());
                 blogResponse.setDescription(blog.getDescription());
                 blogResponse.setContent(blog.getContent());
                 blogResponse.setAuthorId(blog.getAuthorId());
 
-                // category name nikalna
-                Optional<Category> optionalCategory =
-                        categoryRepository.findById(blog.getCategoryId());
-
+                Optional<Category> optionalCategory = categoryRepository.findById(blog.getCategoryId());
                 if (optionalCategory.isPresent()) {
                     Category category = optionalCategory.get();
                     blogResponse.setCategoryName(category.getName());
                 }
 
-                // subcategory name nikalna
-                Optional<SubCategory> optionalSubCategory =
-                        subCategoryRepository.findById(blog.getSubcategoryId());
-
+                Optional<SubCategory> optionalSubCategory = subCategoryRepository.findById(blog.getSubcategoryId());
                 if (optionalSubCategory.isPresent()) {
                     SubCategory sc = optionalSubCategory.get();
                     blogResponse.setSubCategoryName(sc.getName());
@@ -269,7 +263,6 @@ public class BlogService {
 
                 responses.add(blogResponse);
             }
-
             return new ApiResponse<>(true, "Search results fetched", responses);
 
         } catch (Exception e) {
