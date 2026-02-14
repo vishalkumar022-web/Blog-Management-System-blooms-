@@ -1,8 +1,12 @@
 package in.vishal.blooms.dto;
 
-import in.vishal.blooms.models.Status;
+import java.io.Serializable;
 
-public class CategoryResponse {
+public class CategoryResponse implements Serializable { // ✅ Change here
+    private static final long serialVersionUID = 1L;
+
+    // ... fields getters setters same
+
 
     private String id;
     private String title;

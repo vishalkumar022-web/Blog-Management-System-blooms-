@@ -7,13 +7,24 @@ public class SubcategoryRequest {
     private String subCategoryTittle;
     private String subCategoryDesc;
     private String subCategoryUrl;
+   // ✅ NEW: Kis user ne banaya
+    private String userId;
 
-    public SubcategoryRequest(String category_id, String subCategoryId, String subCategoryTittle, String subCategoryDesc, String subCategoryUrl) {
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public SubcategoryRequest(String category_id, String subCategoryId, String subCategoryTittle, String subCategoryDesc, String subCategoryUrl , String userId) {
         this.categoryId = category_id;
         this.subCategoryId = subCategoryId;
         this.subCategoryTittle = subCategoryTittle;
         this.subCategoryDesc = subCategoryDesc;
         this.subCategoryUrl = subCategoryUrl;
+        this.userId = userId;
     }
 
     public SubcategoryRequest() {

@@ -1,6 +1,14 @@
 package in.vishal.blooms.dto;
 
-public class SubCategoryResponse {
+
+
+import java.io.Serializable;
+
+public class SubCategoryResponse implements Serializable { // ✅ Change here
+    private static final long serialVersionUID = 1L;
+
+    // ... fields getters setters same
+
 
     private String categoryId;
     private String subCategoryId;

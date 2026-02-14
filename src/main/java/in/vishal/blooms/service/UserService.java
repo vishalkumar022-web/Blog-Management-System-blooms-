@@ -3,13 +3,17 @@ package in.vishal.blooms.service;
 import in.vishal.blooms.dto.UserRequest;
 import in.vishal.blooms.dto.UserResponse;
 import in.vishal.blooms.exceptions.ApplicationException;
-import in.vishal.blooms.models.Role;
-import in.vishal.blooms.models.User;
+import in.vishal.blooms.models.*;
+import in.vishal.blooms.repository.BlogRepository;
+import in.vishal.blooms.repository.CategoryRepository;
+import in.vishal.blooms.repository.SubCategoryRepository;
 import in.vishal.blooms.repository.UserRepository;
 import in.vishal.blooms.response.ApiResponse;
 //import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -26,14 +30,22 @@ public class UserService {
     // ✅ Manual Logger Definition
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
+    // Inko inject kiya taaki hum user ka contribution fetch kar sakein
+    private final CategoryRepository categoryRepository;
+    private final SubCategoryRepository subCategoryRepository;
+    private final BlogRepository blogRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, CategoryRepository categoryRepository, SubCategoryRepository subCategoryRepository, BlogRepository blogRepository) {
         this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
+        this.subCategoryRepository = subCategoryRepository;
+        this.blogRepository = blogRepository;
     }
 
     // ==========================================
     // 1. GET USER BY ID (Secure)
     // ==========================================
+    @Cacheable(value = "users", key = "#userId") // ✅ User Profile ab Redis se aayega (Fast!)
     public ApiResponse<UserResponse> getUserById(String userId) {
         log.info("Fetching user by ID: {}", userId);
 
@@ -65,6 +77,38 @@ public class UserService {
             userResponse.setPhoneNumber(user.getPhoneNumber());
             userResponse.setRole(user.getRole());
 
+
+            // ✅ Logic: User ke banaye hue Categories fetch karna
+            List<Category> createdCats = categoryRepository.findByCreatedBy(userId);
+            List<String> catNames = new ArrayList<>();
+            for (Category c : createdCats) {
+                if(c.isActive()) {
+                    catNames.add(c.getName());
+                }
+            }
+            userResponse.setMyCreatedCategories(catNames);
+
+            // ✅ Logic: User ke banaye hue SubCategories fetch karna
+            List<SubCategory> createdSubCats = subCategoryRepository.findByCreatedBy(userId);
+            List<String> subCatNames = new ArrayList<>();
+            for (SubCategory sc : createdSubCats) {
+                if(sc.getActive()) {
+                    subCatNames.add(sc.getName());
+                }
+            }
+            userResponse.setMyCreatedSubCategories(subCatNames);
+
+            // ✅ Logic: User ke banaye hue Blogs fetch karna
+            List<Blog> createdBlogs = blogRepository.findByAuthorId(userId);
+            List<String> blogTitles = new ArrayList<>();
+            for (Blog b : createdBlogs) {
+                if(b.getActive()) {
+                    blogTitles.add(b.getTitle());
+                }
+            }
+            userResponse.setMyCreatedBlogs(blogTitles);
+
+
             return new ApiResponse<>(true, "User fetched successfully", userResponse);
 
         } catch (ApplicationException e) {
@@ -78,48 +122,13 @@ public class UserService {
     // ==========================================
     // 2. GET ALL USERS (Paginated to prevent Hang)
     // ==========================================
-    public ApiResponse<List<UserResponse>> getUsers(int page, int size) {
-        log.info("Fetching users - Page: {}, Size: {}", page, size);
-
-        try {
-            // ✅ Pagination Setup (Sort by Name)
-            // Ab DB se sirf 'size' amount ka data aayega (e.g., 10 records)
-            PageRequest pageRequest = PageRequest.of(page, size, Sort.by("name").ascending());
-
-            Page<User> userPage = userRepository.findAll(pageRequest);
-            List<User> userList = userPage.getContent(); // List nikali
-
-            List<UserResponse> userResponses = new ArrayList<>();
-
-            // ✅ TUMHARA LOGIC (Loop & Filter)
-            for (User user : userList) {
-                // ✅ CRASH FIX: "Role.ADMIN..." ko pehle rakha aur null check lagaya
-                boolean isAdmin = user.getRole() != null && user.getRole().equalsIgnoreCase(Role.ADMIN.getDisplayName());
-
-                if (user.isActive() && !isAdmin) {
-                    UserResponse userResponse = new UserResponse();
-                    userResponse.setUserId(user.getId());
-                    userResponse.setProfileUrl(user.getProfileUrl());
-                    userResponse.setName(user.getName());
-                    userResponse.setRole(user.getRole());
-                    userResponse.setUserName(user.getUserName());
-                    userResponse.setEmail(user.getEmail());
-                    userResponse.setPhoneNumber(user.getPhoneNumber());
-                    // userResponse.setUserId(user.getId()); // Duplicate line removed
-                    userResponses.add(userResponse);
-                }
-            }
-            return new ApiResponse<>(true, "Users fetched successfully", userResponses);
-
-        } catch (Exception e) {
-            log.error("Error in getUsers: {}", e.getMessage());
-            throw new ApplicationException("Error fetching users list");
-        }
-    }
+    // ❌ NOTE: Maine 'getUsers' (Get All) method yahan se hata diya hai.
+    // Ab koi bhi 'get all' karke sabka data nahi dekh payega. Privacy Secured! 🔒
 
     // ==========================================
     // 3. SEARCH USER (Paginated)
     // ==========================================
+    @Cacheable(value = "users", key = "#name + '-' + #page + '-' + #size")
     public ApiResponse<List<UserResponse>> searchUsersByName(String name, int page, int size) {
         log.info("Searching users by name: {}", name);
 
@@ -160,6 +169,7 @@ public class UserService {
     // ==========================================
     // 4. DELETE USER (Secure)
     // ==========================================
+    @CacheEvict(value = "users", allEntries = true)
     public ApiResponse<Boolean> deleteUser(String userId) {
         log.info("Deleting user ID: {}", userId);
 
@@ -189,6 +199,7 @@ public class UserService {
     // ==========================================
     // 5. UPDATE USER (Duplicate Check + Validation)
     // ==========================================
+    @CacheEvict(value = "users", allEntries = true)
     public ApiResponse<UserResponse> updateUser(UserRequest userRequest) {
         log.info("Updating user ID: {}", userRequest.getUserId());
 

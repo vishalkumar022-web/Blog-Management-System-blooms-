@@ -2,7 +2,13 @@ package in.vishal.blooms.dto;
 
 import java.util.List;
 
-public class BlogResponse {
+
+import java.io.Serializable;
+
+public class BlogResponse implements Serializable { // ✅ Change here
+    private static final long serialVersionUID = 1L;
+
+    // ... fields getters setters same
 
     private String blogId;
     private String title;

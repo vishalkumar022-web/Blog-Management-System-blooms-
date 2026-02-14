@@ -1,8 +1,11 @@
 package in.vishal.blooms.dto;
 
-import in.vishal.blooms.models.Role;
+import java.io.Serializable; // ✅ IMPORT
+import java.util.List;
 
-public class UserResponse {
+public class UserResponse implements Serializable { // ✅ IMPLEMENTS SERIALIZABLE
+
+    private static final long serialVersionUID = 1L;
 
     private String userId;
     private String userName;
@@ -14,6 +17,13 @@ public class UserResponse {
     private String role;
 
     private String token;   // 🔥 JWT TOKEN
+
+
+    // ✅ NEW FIELDS: User ka contribution dikhane ke liye
+    private List<String> myCreatedCategories;
+    private List<String> myCreatedSubCategories;
+    private List<String> myCreatedBlogs;
+
 
     public UserResponse() {
     }
@@ -82,4 +92,14 @@ public class UserResponse {
     public void setToken(String token) {
         this.token = token;
     }
+
+    // ✅ NEW GETTERS & SETTERS FOR LISTS
+    public List<String> getMyCreatedCategories() { return myCreatedCategories; }
+    public void setMyCreatedCategories(List<String> myCreatedCategories) { this.myCreatedCategories = myCreatedCategories; }
+
+    public List<String> getMyCreatedSubCategories() { return myCreatedSubCategories; }
+    public void setMyCreatedSubCategories(List<String> myCreatedSubCategories) { this.myCreatedSubCategories = myCreatedSubCategories; }
+
+    public List<String> getMyCreatedBlogs() { return myCreatedBlogs; }
+    public void setMyCreatedBlogs(List<String> myCreatedBlogs) { this.myCreatedBlogs = myCreatedBlogs; }
 }

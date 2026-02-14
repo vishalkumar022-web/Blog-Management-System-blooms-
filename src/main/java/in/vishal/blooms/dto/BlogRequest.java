@@ -3,6 +3,13 @@ package in.vishal.blooms.dto;
 import java.time.LocalDateTime;
 
 public class BlogRequest {
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     private String blogId;
     private String blogTitle;
@@ -13,7 +20,7 @@ public class BlogRequest {
     private LocalDateTime blogCreatedDTTM;
     private String blogCategoryId;
     private String blogSubcategoryId;
-
+private String userId; // Add userId field
     // Default Constructor
     public BlogRequest() {
     }
@@ -21,7 +28,7 @@ public class BlogRequest {
     // Parameterized Constructor
     public BlogRequest(String blogId, String blogTitle, String blogDescription, String blogContent,
                        String blogStatus, String blogAuthorId, LocalDateTime blogCreatedDTTM,
-                       String blogCategoryId, String blogSubcategoryId) {
+                       String blogCategoryId, String blogSubcategoryId , String userId) {
         this.blogId = blogId;
         this.blogTitle = blogTitle;
         this.blogDescription = blogDescription;
@@ -31,6 +38,7 @@ public class BlogRequest {
         this.blogCreatedDTTM = blogCreatedDTTM;
         this.blogCategoryId = blogCategoryId;
         this.blogSubcategoryId = blogSubcategoryId;
+        this.userId = userId; // Initialize userId
     }
 
     // --- Corrected Getters and Setters (Standard Naming) ---

@@ -12,6 +12,9 @@ import in.vishal.blooms.repository.SubCategoryRepository;
 import in.vishal.blooms.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -36,6 +39,10 @@ public class CategoryService {
     }
 
     // CREATE
+    @Caching(evict = {
+            @CacheEvict(value = "categories", allEntries = true),
+            @CacheEvict(value = "users", allEntries = true) // ✅ Fix: User profile refresh karne ke liye
+    })
     public ApiResponse<String> createCategory(CategoryRequest categoryRequest) {
         log.info("Creating category: {}", categoryRequest.getTitle());
         try {
@@ -47,6 +54,8 @@ public class CategoryService {
             category.setActive(true);
             category.setCreatedDTTM(LocalDateTime.now());
             category.setId(String.valueOf(System.currentTimeMillis()));
+// ✅ NEW: User ID save kar rahe hain
+            category.setCreatedBy(categoryRequest.getUserId());
 
             categoryRepository.save(category);
             log.info("Category created successfully with ID: {}", category.getId());
@@ -84,9 +93,10 @@ public class CategoryService {
     }
 
     // GET ALL (Paginated)
+    @Cacheable(value = "categories", key = "#page + '-' + #size") // ✅ Seedha Redis (RAM) se fast data laao
     public ApiResponse<List<CategoryResponse>> getAllCategories(int page, int size) {
         log.info("Fetching categories page: {}, size: {}", page, size);
-
+        System.out.println("FOR testinng redis caching: Fetching categories from DB for page: " + page + ", size: " + size); // ✅ Console log for testing cache
         try {
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by("name").ascending());
             Page<Category> categoryPage = categoryRepository.findAll(pageRequest);
@@ -145,6 +155,10 @@ public class CategoryService {
     }
 
     // UPDATE
+    @Caching(evict = {
+            @CacheEvict(value = "categories", allEntries = true),
+            @CacheEvict(value = "users", allEntries = true) // ✅ Fix: User profile refresh karne ke liye
+    })
     public ApiResponse<CategoryResponse> updateCategory(CategoryRequest request) {
         log.info("Updating category ID: {}", request.getId());
 
@@ -180,6 +194,11 @@ public class CategoryService {
     }
 
     // DELETE
+    @Caching(evict = {
+            @CacheEvict(value = "categories", allEntries = true),
+            @CacheEvict(value = "users", allEntries = true) // ✅ Fix: User profile refresh karne ke liye
+    })
+
     public ApiResponse<Boolean> deleteCategory(String categoryId) {
         log.info("Deleting category ID: {}", categoryId);
 

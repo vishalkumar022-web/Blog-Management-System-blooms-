@@ -13,6 +13,9 @@ import in.vishal.blooms.repository.SubCategoryRepository;
 import in.vishal.blooms.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -38,6 +41,10 @@ public class SubcategoryService {
         this.categoryRepository = categoryRepository;
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "subcategories", allEntries = true),
+            @CacheEvict(value = "users", allEntries = true) // ✅ Fix
+    })
     public ApiResponse<String> createSubCategory(SubcategoryRequest subCategoryRequest) {
         log.info("Creating subcategory: {}", subCategoryRequest.getSubCategoryTittle());
 
@@ -56,6 +63,8 @@ public class SubcategoryService {
             sc.setActive(true);
             sc.setStatus(Status.INREVIEW.getDisplayName());
             sc.setCreatedDTTM(LocalDateTime.now());
+            // ✅ NEW: User ID save kar rahe hain
+            sc.setCreatedBy(subCategoryRequest.getUserId());
 
             subCategoryRepository.save(sc);
 
@@ -102,9 +111,10 @@ public class SubcategoryService {
     }
 
     // GET ALL (Paginated)
+    @Cacheable(value = "subcategories", key = "#page + '-' + #size") // ✅ Seedha Redis se laao
     public ApiResponse<List<SubCategoryResponse>> getSubCategories(int page, int size) {
         log.info("Fetching subcategories page: {}, size: {}", page, size);
-
+        System.out.println("FOR testinng redis caching: Fetching categories from DB for page: " + page + ", size: " + size); // ✅ Console log for testing cache
         try {
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by("name").ascending());
             Page<SubCategory> subCategoryPage = subCategoryRepository.findAll(pageRequest);
@@ -162,7 +172,10 @@ public class SubcategoryService {
             throw new ApplicationException("Error searching subcategories");
         }
     }
-
+    @Caching(evict = {
+            @CacheEvict(value = "subcategories", allEntries = true),
+            @CacheEvict(value = "users", allEntries = true) // ✅ Fix
+    })
     public ApiResponse<Boolean> deleteSubCategory(String Id) {
         log.info("Deleting subcategory ID: {}", Id);
 
@@ -181,7 +194,10 @@ public class SubcategoryService {
             throw new ApplicationException("Failed to delete subcategory");
         }
     }
-
+    @Caching(evict = {
+            @CacheEvict(value = "subcategories", allEntries = true),
+            @CacheEvict(value = "users", allEntries = true) // ✅ Fix
+    })
     public ApiResponse<SubCategoryResponse> updateSubCategory(SubcategoryRequest request) {
         log.info("Updating subcategory ID: {}", request.getSubCategoryId());
 

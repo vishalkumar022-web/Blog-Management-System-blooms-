@@ -24,4 +24,6 @@ public interface SubCategoryRepository extends MongoRepository<SubCategory, Stri
 
     // ✅ Get SubCategories by CategoryID (List hi return karega kyunki ye dropdown ke liye hota hai)
     List<SubCategory> findByCategoryId(String categoryId);
+    // Interface ke andar ye line add karo:
+    List<SubCategory> findByCreatedBy(String createdBy);
 }

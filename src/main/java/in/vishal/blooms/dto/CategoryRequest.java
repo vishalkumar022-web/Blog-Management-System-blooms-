@@ -5,19 +5,33 @@ public class CategoryRequest {
     private String id;
     private String desc;
     private String categoryUrl;
-
+    // ✅ NEW: Kis user ne banaya
+    private String userId;
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public CategoryRequest() {
     }
 
-    public CategoryRequest(String title, String id, String desc, String categoryUrl) {
+    public CategoryRequest(String title, String id, String desc, String categoryUrl ,String userId) {
         this.title = title;
         this.id = id;
         this.desc = desc;
         this.categoryUrl = categoryUrl;
+        this.userId = userId;
     }
 
 //    public CategoryRequest(String title, String desc, String categoryUrl) {

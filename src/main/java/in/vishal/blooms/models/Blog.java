@@ -44,6 +44,20 @@ public class Blog {
 
     private String subcategoryId;
 
+    private String createdBy;
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
     private boolean active ;
 
     public boolean getActive() {

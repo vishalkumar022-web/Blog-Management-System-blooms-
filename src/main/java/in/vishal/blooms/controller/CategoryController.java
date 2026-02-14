@@ -4,6 +4,7 @@ import in.vishal.blooms.dto.CategoryRequest;
 import in.vishal.blooms.dto.CategoryResponse;
 import in.vishal.blooms.dto.SubCategoryResponse;
 import in.vishal.blooms.response.ApiResponse;
+import in.vishal.blooms.security.JwtUtil;
 import in.vishal.blooms.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,8 @@ import java.util.List;
 @RequestMapping("/api/Category")
 public class CategoryController {
 
+    @Autowired
+    private JwtUtil jwtUtil;
     @Autowired
     private CategoryService categoryService;
 
@@ -52,19 +55,30 @@ public class CategoryController {
 
     // 5. Update
     @PutMapping
-    public ResponseEntity<ApiResponse<CategoryResponse>> updateCategory(@RequestBody CategoryRequest categoryRequest) {
+    public ResponseEntity<ApiResponse<CategoryResponse>> updateCategory(@RequestBody CategoryRequest categoryRequest , @RequestHeader ("Authorization") String tokenHeader) {
+        String token = tokenHeader.substring(7);
+        String userIdFromToken = jwtUtil.extractUserId(token);
+
+        categoryRequest.setUserId(userIdFromToken);
+
         return ResponseEntity.ok(categoryService.updateCategory(categoryRequest));
     }
 
     // 6. Delete
     @DeleteMapping
-    public ResponseEntity<ApiResponse<Boolean>> deleteCategory(@RequestParam String categoryId) {
+    public ResponseEntity<ApiResponse<Boolean>> deleteCategory(@RequestHeader ("Authorization") String tokenHeader , @RequestParam String categoryId) {
+        String token = tokenHeader.substring(7);
+        String userIdFromToken = jwtUtil.extractUserId(token);
+
         return ResponseEntity.ok(categoryService.deleteCategory(categoryId));
     }
 
     // 7. Get Subcategories
     @GetMapping("/subcategories")
-    public ResponseEntity<ApiResponse<List<SubCategoryResponse>>> getSubCategoriesForCategory(@RequestParam String categoryId) {
+    public ResponseEntity<ApiResponse<List<SubCategoryResponse>>> getSubCategoriesForCategory(@RequestHeader ("Authorization") String tokenHeader , @RequestParam String categoryId) {
+        String token = tokenHeader.substring(7);
+        String userIdFromToken = jwtUtil.extractUserId(token);
+
         return ResponseEntity.ok(categoryService.getSubCategoriesForCategory(categoryId));
     }
 }
