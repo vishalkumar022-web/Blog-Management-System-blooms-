@@ -1,18 +1,23 @@
 # ---------- BUILD STAGE ----------
-FROM maven:3.9.9-eclipse-temurin-17 AS build
-WORKDIR /build
+# Hum Java 21 wala Maven use kar rahe hain
+FROM maven:3.9.9-eclipse-temurin-21 AS build
+WORKDIR /app
 
+# Pehle files copy karte hain
 COPY pom.xml .
 COPY src ./src
 
+# Phir build karte hain (Tests skip karke taaki jaldi ho)
 RUN mvn clean package -DskipTests
 
-
 # ---------- RUN STAGE ----------
-FROM eclipse-temurin:17-jdk-alpine
+# Yahan Maine Change Kiya Hai: Java 17 -> Java 21 ✅
+FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
-COPY --from=build /build/target/*.jar app.jar
+# Build stage se bani hui JAR file copy kar rahe hain
+COPY --from=build /app/target/*.jar app.jar
 
+# Port expose aur run command
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
