@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'  # ✅ Java 21 Updated
 
       - name: Build app
         run: mvn clean package -DskipTests
