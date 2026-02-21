@@ -27,4 +27,13 @@ public interface UserConnectionRepository extends MongoRepository<UserConnection
     // 4. UNFOLLOW KARNA:
     // Jis table entry me mera aur samne wale ka ID match ho, us entry ko delete kar do (Unfollow).
     void deleteByFollowerIdAndFollowingId(String followerId, String followingId);
+
+
+
+    // NAYE PRO METHODS: Sirf Ginti (Count) laane ke liye!
+    // ==========================================
+    // Ye method poori list nahi layega, sirf ek Number (long) layega, isse RAM bachegi.
+    long countByFollowerId(String followerId);
+    long countByFollowingId(String followingId);
+
 }

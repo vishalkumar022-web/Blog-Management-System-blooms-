@@ -106,9 +106,12 @@ public class UserService {
                 }
             }
             userResponse.setMyCreatedBlogs(blogTitles);
-
-            long followers = userConnectionRepository.findByFollowingId(userId).size();
-            long following = userConnectionRepository.findByFollowerId(userId).size();
+// ==========================================
+            // YAHAN MEMORY OPTIMIZATION KIYA HAI 🚀
+            // ==========================================
+            // Pehle hum list banakar size nikal rahe the, ab hum seedha database se number (count) mangwa rahe hain.
+            long followers = userConnectionRepository.countByFollowingId(userId);
+            long following = userConnectionRepository.countByFollowerId(userId);
 
             userResponse.setFollowerCount(followers);
             userResponse.setFollowingCount(following);
