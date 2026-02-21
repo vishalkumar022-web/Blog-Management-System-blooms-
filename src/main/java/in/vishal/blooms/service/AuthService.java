@@ -1,5 +1,13 @@
+// Ye batata hai ki ye file hamare project ke kis folder (folder ko package bolte hain) me rakhi hai.
+// Agar ye nahi likhenge, toh Java ko ye file milegi hi nahi aur error de dega.
 package in.vishal.blooms.service;
 
+// ==========================================
+// IMPORTS: Bahar se saman (tools) mangwana
+// ==========================================
+// Jaise ghar banane ke liye bahar se eent aur cement mangwana padta hai,
+// waise hi code likhne ke liye pehle se bani hui files (classes) import karni padti hain.
+// Agar ye imports nahi honge, toh niche likhe gaye words (jaise User, Map, RestTemplate) pe laal (red) error aayega.
 import in.vishal.blooms.dto.ForgotPasswordRequest;
 import in.vishal.blooms.dto.LoginRequest;
 import in.vishal.blooms.dto.UserRequest;
@@ -12,33 +20,54 @@ import in.vishal.blooms.response.ApiResponse;
 import in.vishal.blooms.security.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.MailAuthenticationException;
-import org.springframework.mail.MailSendException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
+// @Service Spring Boot ko batata hai ki "Bhai, ye file dimaag (logic) lagane wali file hai."
+// Agar ye nahi lagayenge, toh Spring Boot isko start nahi karega aur app fail ho jayega.
 @Service
 public class AuthService {
 
+    // Logger ka kaam hai terminal/console par messages print karna (jaise console.log hota hai JS me).
+    // Agar ye nahi hota, toh humein pata hi nahi chalta ki code kahan tak chala aur kahan fail hua.
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
+    // Ye database se baat karne wala "Manager" hai.
     private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;
-    private final JavaMailSender javaMailSender;
 
-    public AuthService(UserRepository userRepository, JwtUtil jwtUtil, JavaMailSender javaMailSender) {
+    // Ye Security guard hai jo token (entry pass) banata hai.
+    private final JwtUtil jwtUtil;
+
+    // ==========================================
+    // NAYA TOOL: RestTemplate (Hamara Smart Delivery Boy) 🚚
+    // ==========================================
+    // EXPLANATION: Ye Spring Boot ka tool hai jo internet par kisi dusri website (yahan Brevo) ko message (API request) bhejta hai.
+    // KYU HAI: Kyunki ab hum SMTP (Post office) use nahi kar rahe. Hum direct internet highway (Port 443) use karenge.
+    // NAHI HOTA TOH: Hamara backend kisi bhi dusre server (Brevo/AI) se baat nahi kar pata.
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    // @Value ka kaam hai 'application.properties' file me se secret chura kar yahan is variable me daalna.
+    // NAHI HOTA TOH: Humein password directly code me likhna padta, jo ki bohot risky hai.
+    @Value("${brevo.api.key}")
+    private String brevoApiKey;
+
+    @Value("${spring.mail.username}")
+    private String senderEmail;
+
+    // Constructor: Jab ye class banti hai, toh Spring Boot automatically Inko (Repository, JwtUtil) isme daal deta hai.
+    public AuthService(UserRepository userRepository, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
-        this.javaMailSender = javaMailSender;
     }
 
-    // ================= HELPER METHOD =================
+    // Role check karne ka helper function (Sirf 'user' aur 'admin' allow karega)
     private boolean isValidRole(String role) {
         if (role == null) return false;
         for (Role r : Role.values()) {
@@ -49,7 +78,7 @@ public class AuthService {
         return false;
     }
 
-    // ================= REGISTER USER =================
+    // Naya user banane (Register) ka logic
     public ApiResponse<String> registerUser(UserRequest userRequest) {
         if (!isValidRole(userRequest.getRole())) {
             throw new ApplicationException("Invalid role given. Allowed roles: user, admin");
@@ -73,14 +102,14 @@ public class AuthService {
             user.setRole(userRequest.getRole());
             user.setActive(true);
 
-            userRepository.save(user);
+            userRepository.save(user); // Data save ho gaya
             return new ApiResponse<>(true, "User registered successfully.", null);
         } catch (Exception e) {
             throw new ApplicationException("Error saving user: " + e.getMessage());
         }
     }
 
-    // ================= LOGIN USER =================
+    // Login karne ka logic
     public ApiResponse<UserResponse> login(LoginRequest loginRequest) {
         User user = userRepository.findByPhoneNumber(loginRequest.getPhoneNumber())
                 .orElseThrow(() -> new ApplicationException("Phone number not found"));
@@ -97,100 +126,105 @@ public class AuthService {
         response.setPhoneNumber(user.getPhoneNumber());
         response.setProfileUrl(user.getProfileUrl());
         response.setRole(user.getRole());
-        response.setToken(token);
+        response.setToken(token); // User ko token de diya
 
         return new ApiResponse<>(true, "Login Successful", response);
     }
 
     // ================= FORGOT PASSWORD LOGIC =================
-    // [EXPLANATION]: Yahan humne ek 'Map' banaya hai. Ye ek temporary diary jaisa hai.
-    // Isme hum store karenge: "Kis Email ko -> Kya OTP bheja".
-    // Agar ye nahi banate, toh OTP bhej toh dete, par jab user wapas OTP lekar aata,
-    // toh hume pata hi nahi chalta ki asli OTP kya tha verify karne ke liye.
+    // Ye 'Map' ek temporary diary hai. Isme hum save karenge "Kis email pe kya OTP bheja hai".
+    // NAHI HOTA TOH: Hum bhool jate ki user ko kya OTP bheja tha, aur verify nahi kar paate.
     private Map<String, String> otpStorage = new HashMap<>();
 
+    // Email bhejne wala main function
     public ApiResponse<String> sendOtp(String email) {
-        // 1. Email DB Check
-        // [EXPLANATION]: Sabse pehle check karo ki ye email humare database mein hai bhi ya nahi.
-        // Agar DB mein nahi hai, toh OTP mat bhejo. Ye security ke liye hai taaki koi faltu email pe spam na kare.
+
+        // 1. Pehle check kiya ki ye email humare database me hai bhi ya nahi.
         if (userRepository.findByEmail(email).isEmpty()) {
             throw new ApplicationException("Email ID not exist buddy");
         }
 
-        // 2. Generate OTP
-        // [EXPLANATION]: Yahan hum 4 digit ka random number bana rahe hain.
-        // 'nextInt(9000)' deta hai 0 se 8999 tak number.
-        // '+ 1000' karne se wo ban jata hai 1000 se 9999.
-        // Agar '+ 1000' nahi karte, toh kabhi kabhi '50' ya '9' aa jata jo 4 digit nahi hota.
+        // 2. 4-digit ka random OTP banaya.
         String otp = String.valueOf(new Random().nextInt(9000) + 1000);
 
-        // 3. Send Email
-        // [EXPLANATION]: 'try' block yahan isliye lagaya kyuki email bhejna ek "Risk" wala kaam hai.
-        // Internet band ho sakta hai, password galat ho sakta hai, Google ka server down ho sakta hai.
         try {
-            // [EXPLANATION]: Ye ek khali lifafa (envelope) bana rahe hain email likhne ke liye.
-            SimpleMailMessage message = new SimpleMailMessage();
-            // [EXPLANATION]: Lifafe par pata (address) likha ki kisko bhejna hai.
-            message.setTo(email);
-            // [EXPLANATION]: Email ka subject (Title) set kiya.
-            message.setSubject("Password Reset OTP");
-            // [EXPLANATION]: Asli content (OTP) lifafe ke andar dala.
-            message.setText("Hello, Your OTP is: " + otp);
+            // 3. Brevo API ka Pata (Address)
+            // Ye wo website link hai jahan humara RestTemplate request bhejega.
+            String url = "https://api.brevo.com/v3/smtp/email";
 
-            // [EXPLANATION]: Ye wo line hai jahan "Send" button dabta hai.
-            // Spring Boot ab Google ke server se baat karke email bhejega.
-            javaMailSender.send(message); // Yahan Action Hoga
+            // 4. Headers (Lifafa ke bahar ki jankari)
+            // Jaise postman ko ID card dikhana padta hai, yahan hum HttpHeaders me apni API Key de rahe hain.
+            // NAHI HOTA TOH: Brevo humein pehchan nahi pata aur bolta "Bhai tu kaun hai? Main email nahi bhejunga!"
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON); // Bata rahe hain ki hum JSON (khabar) bhej rahe hain
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+            headers.set("api-key", brevoApiKey); // Humari secret chabhi
 
-            // [EXPLANATION]: Email chala gaya! Ab turant apni diary (Map) mein note kar lo.
-            // Ki "Is email" ke liye "Ye OTP" bheja hai. Taaki baad mein verify kar sakein.
-            otpStorage.put(email, otp);
-            log.info("OTP sent to: {}", email);
-            return new ApiResponse<>(true, "OTP sent successfully to " + email, null);
+            // 5. Body (Lifafe ke andar ki chitthi)
+            // Hum ek Map (dictionary) bana rahe hain jisme bata rahe hain kisko bhejna hai, kya bhejna hai.
+            // NAHI HOTA TOH: Khali email chala jata ya error aa jata.
+            Map<String, Object> body = new HashMap<>();
 
-        } catch (MailAuthenticationException e) {
-            // Ab ye wala pakdega tumhara error
-            // [EXPLANATION]: CATCH 1: Ye tab aayega jab tumhara application.properties mein EMAIL ya APP PASSWORD galat hoga.
-            // Google bolega "Bhai password match nahi kar raha, main email nahi bhejunga".
-            log.error("Auth Failed: {}", e.getMessage());
-            throw new ApplicationException("Server Config Error: Password galat hai ya App Password expire ho gaya hai.");
-        } catch (MailSendException e) {
-            // [EXPLANATION]: CATCH 2: Ye tab aayega jab "To" wala email galat format ka ho (jaise bina @gmail.com).
-            // Ya fir wo email exist hi na karta ho Google ke paas.
-            log.error("Invalid Email: {}", e.getMessage());
-            throw new ApplicationException("Email address galat hai ya exist nahi karta.");
+            // Kon bhej raha hai? (Sender)
+            body.put("sender", Map.of("name", "Blooms App", "email", senderEmail));
+
+            // Kisko bhejna hai? (Receiver - List isliye kyunki 1 se zyada log ko bhi bhej sakte hain)
+            body.put("to", List.of(Map.of("email", email)));
+
+            // Email ka title (Subject)
+            body.put("subject", "Blooms Password Reset OTP");
+
+            // Asli message
+            body.put("textContent", "Hello,\n\nYour OTP for password reset is: " + otp + "\n\nThanks,\nBlooms Team");
+
+            // 6. Packet taiyar karna (HttpEntity)
+            // Header aur Body dono ko mila kar ek packet bana diya.
+            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+            // 7. ASLI MAGIC: Internet par packet bhejna! 🚀
+            // RestTemplate packet uthata hai aur us URL (Brevo) par POST kar deta hai.
+            // Ye Port 443 (Highway) se jata hai, isliye Render ka security guard isko nahi rokega!
+            ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+
+            // 8. Result Check Karna
+            // Agar code '200' se '299' ke beech me aaya (matlab Success)
+            if (response.getStatusCode().is2xxSuccessful()) {
+                otpStorage.put(email, otp); // Diary me likh liya
+                log.info("OTP sent to: {} using Brevo API", email);
+                return new ApiResponse<>(true, "OTP sent successfully to " + email, null);
+            } else {
+                // Agar fail hua toh error feko
+                throw new ApplicationException("Failed to send email via Brevo.");
+            }
+
         } catch (Exception e) {
-            // [EXPLANATION]: CATCH 3: Ye "Baap Catch" hai. Jo upar ke 2 mein nahi pakda gaya, wo yahan aayega.
-            // Jaise: Internet connection toot gaya, ya koi aur unknown error.
-            log.error("Unknown Error: {}", e.getMessage());
-            throw new ApplicationException("Failed to send email. Check internet connection.");
+            // Agar internet band hai ya API key galat hai toh program crash hone se bachane ke liye catch block.
+            log.error("Brevo API Error: {}", e.getMessage());
+            throw new ApplicationException("Failed to send email. Check internet connection or API Key.");
         }
     }
 
+    // OTP aane ke baad, password change karne ka logic
     public ApiResponse<String> resetPassword(ForgotPasswordRequest request) {
         String email = request.getEmail();
         String userOtp = request.getOtp();
         String newPassword = request.getNewPassword();
 
-        // [EXPLANATION]: Pehle check karo user ne OTP ka dabba khali toh nahi chhoda?
+        // Check 1: User ne OTP dala hai na?
         if (userOtp == null || userOtp.isEmpty()) throw new ApplicationException("Please give otp first");
 
-        // [EXPLANATION]: Check karo ki kya humne is email pe kabhi OTP bheja bhi tha?
-        // Agar Map (diary) mein ye email nahi hai, matlab user ne pehla step skip kiya hai.
+        // Check 2: Kya is email ko OTP bheja tha humne?
         if (!otpStorage.containsKey(email)) throw new ApplicationException("Please send OTP first!");
 
-        // [EXPLANATION]: Sabse main check: User ka diya hua OTP == Diary wala OTP?
-        // Agar match nahi kiya, toh error feko.
+        // Check 3: Jo OTP user laya hai, kya wo humari diary se match kar raha hai?
         if (!otpStorage.get(email).equals(userOtp)) throw new ApplicationException("Invalid OTP! Try again.");
 
-        // [EXPLANATION]: Ab sab sahi hai. Database se user nikalo.
+        // Agar sab sahi hai toh naya password save kar do
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ApplicationException("User not found"));
-        // [EXPLANATION]: User ka password naye wale password se badal do.
         user.setPassword(newPassword);
-        // [EXPLANATION]: Database mein wapas save kar do (Update query chalegi).
         userRepository.save(user);
 
-        // [EXPLANATION]: Kaam khatam! Ab Map (diary) se wo OTP delete kar do.
-        // Kyuki OTP ek hi baar use hona chahiye. Agar delete nahi kiya toh user purana OTP wapas daal ke hack kar sakta hai.
+        // Diary se OTP hata do, taaki dubara koi wahi OTP use na kare.
         otpStorage.remove(email);
 
         return new ApiResponse<>(true, "Password changed successfully", null);
