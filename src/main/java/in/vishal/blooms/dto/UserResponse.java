@@ -25,6 +25,16 @@ public class UserResponse implements Serializable { // ✅ IMPLEMENTS SERIALIZAB
     private List<String> myCreatedBlogs;
 
 
+    // Baki ka tera code waise hi rahega, bas ye niche add kar de:
+    private long followerCount;
+    private long followingCount;
+
+    public long getFollowerCount() { return followerCount; }
+    public void setFollowerCount(long followerCount) { this.followerCount = followerCount; }
+
+    public long getFollowingCount() { return followingCount; }
+    public void setFollowingCount(long followingCount) { this.followingCount = followingCount; }
+
     public UserResponse() {
     }
 

@@ -4,10 +4,7 @@ import in.vishal.blooms.dto.UserRequest;
 import in.vishal.blooms.dto.UserResponse;
 import in.vishal.blooms.exceptions.ApplicationException;
 import in.vishal.blooms.models.*;
-import in.vishal.blooms.repository.BlogRepository;
-import in.vishal.blooms.repository.CategoryRepository;
-import in.vishal.blooms.repository.SubCategoryRepository;
-import in.vishal.blooms.repository.UserRepository;
+import in.vishal.blooms.repository.*;
 import in.vishal.blooms.response.ApiResponse;
 //import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -34,12 +31,14 @@ public class UserService {
     private final CategoryRepository categoryRepository;
     private final SubCategoryRepository subCategoryRepository;
     private final BlogRepository blogRepository;
+    private final UserConnectionRepository userConnectionRepository;
 
-    public UserService(UserRepository userRepository, CategoryRepository categoryRepository, SubCategoryRepository subCategoryRepository, BlogRepository blogRepository) {
+    public UserService(UserRepository userRepository, CategoryRepository categoryRepository, SubCategoryRepository subCategoryRepository, BlogRepository blogRepository , UserConnectionRepository userConnectionRepository) {
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.subCategoryRepository = subCategoryRepository;
         this.blogRepository = blogRepository;
+        this.userConnectionRepository = userConnectionRepository;
     }
 
     // ==========================================
@@ -108,6 +107,11 @@ public class UserService {
             }
             userResponse.setMyCreatedBlogs(blogTitles);
 
+            long followers = userConnectionRepository.findByFollowingId(userId).size();
+            long following = userConnectionRepository.findByFollowerId(userId).size();
+
+            userResponse.setFollowerCount(followers);
+            userResponse.setFollowingCount(following);
 
             return new ApiResponse<>(true, "User fetched successfully", userResponse);
 
