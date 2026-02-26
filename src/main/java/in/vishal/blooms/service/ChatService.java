@@ -1,56 +1,89 @@
 package in.vishal.blooms.service;
 
-import in.vishal.blooms.dto.ChatMessageDto;
+import in.vishal.blooms.dto.ChatMessageRequest;
+import in.vishal.blooms.dto.ChatMessageResponse;
+import in.vishal.blooms.exceptions.ApplicationException;
 import in.vishal.blooms.models.ChatMessage;
 import in.vishal.blooms.repository.ChatMessageRepository;
 import in.vishal.blooms.response.ApiResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-// @Service batata hai ki ye class hamare app ka business logic handle karegi
 @Service
 public class ChatService {
 
-    // Database me save karne ke liye
+    private static final Logger log = LoggerFactory.getLogger(ChatService.class);
+
     @Autowired
     private ChatMessageRepository chatMessageRepository;
 
-    // Turant dusre user ko message bhejane ke liye (Flash Delivery Boy)
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    // 1. Message process aur send karne ka kaam
-    public void processAndSendMessage(ChatMessageDto chatDto) {
+    // 1. Message Send Karne Ka Logic
+    public ApiResponse<ChatMessageResponse> sendMessage(String myUserId, ChatMessageRequest request) {
+        
+        if (request.getTargetUserId() == null || request.getContent() == null) {
+            throw new ApplicationException("Target User ID aur Content zaroori hai bhai!");
+        }
 
-        // Step 1: DTO (Lifafa) se data nikal kar asali Model (ChatMessage) me daalo
+        // 1. Naya message object banaya DB ke liye
         ChatMessage message = new ChatMessage();
-        message.setId(UUID.randomUUID().toString()); // Nayi unique ID banayi
-        message.setTimestamp(LocalDateTime.now());   // Abhi ka time lagaya
-        message.setSenderId(chatDto.getSenderId());
-        message.setReceiverId(chatDto.getReceiverId());
-        message.setContent(chatDto.getContent());
+        message.setId(UUID.randomUUID().toString());
+        message.setSenderId(myUserId);
+        message.setReceiverId(request.getTargetUserId());
+        message.setContent(request.getContent());
+        message.setTimestamp(LocalDateTime.now());
 
-        // Step 2: History ke liye MongoDB me save kar lo
+        // 2. Database mein save kiya
         chatMessageRepository.save(message);
 
-        // Step 3: Receiver ke "Personal In-box" URL par turant bhej do!
-        // URL kaisa dikhega: /topic/messages/123456
-        messagingTemplate.convertAndSend("/topic/messages/" + message.getReceiverId(), message);
+        // 3. Response DTO tayyar kiya Swagger ko dikhane ke liye
+        ChatMessageResponse response = new ChatMessageResponse();
+        response.setId(message.getId());
+        response.setSenderId(message.getSenderId());
+        response.setReceiverId(message.getReceiverId());
+        response.setContent(message.getContent());
+        response.setTimestamp(message.getTimestamp());
+
+        // 4. REAL-TIME MAGIC ✨
+        // Ye line turant us user ki screen par message bhej degi bina page refresh kiye!
+        messagingTemplate.convertAndSend("/topic/messages/" + message.getReceiverId(), response);
+
+        // 5. Swagger ko successfully message return kar do
+        return new ApiResponse<>(true, "Message sent successfully", response);
     }
 
-    // 2. Purani Chat History nikalne ka kaam
-    public ApiResponse<List<ChatMessage>> getChatHistory(String senderId, String receiverId) {
-
-        // Repository se un dono ki saari purani baatein utha lo
+    // 2. Purani Chat History Nikalne Ka Logic
+    public ApiResponse<List<ChatMessageResponse>> getChatHistory(String myUserId, String targetUserId) {
+        
+        // DB se saari baatein nikal li dono dosto ki
         List<ChatMessage> history = chatMessageRepository
                 .findBySenderIdAndReceiverIdOrSenderIdAndReceiverIdOrderByTimestampAsc(
-                        senderId, receiverId, receiverId, senderId);
+                        myUserId, targetUserId, targetUserId, myUserId);
 
-        return new ApiResponse<>(true, "Chat history fetched successfully", history);
+        // List ko DTO List mein convert karna (Bina kisi extra complex code ke)
+        List<ChatMessageResponse> responseList = new ArrayList<>();
+        
+        for (ChatMessage msg : history) {
+            ChatMessageResponse res = new ChatMessageResponse();
+            res.setId(msg.getId());
+            res.setSenderId(msg.getSenderId());
+            res.setReceiverId(msg.getReceiverId());
+            res.setContent(msg.getContent());
+            res.setTimestamp(msg.getTimestamp());
+            
+            responseList.add(res);
+        }
+
+        return new ApiResponse<>(true, "Chat history fetched successfully", responseList);
     }
 }

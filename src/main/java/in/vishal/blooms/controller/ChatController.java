@@ -1,47 +1,57 @@
 package in.vishal.blooms.controller;
 
-import in.vishal.blooms.dto.ChatMessageDto;
-import in.vishal.blooms.models.ChatMessage;
+import in.vishal.blooms.dto.ChatMessageRequest;
+import in.vishal.blooms.dto.ChatMessageResponse;
 import in.vishal.blooms.response.ApiResponse;
+import in.vishal.blooms.security.JwtUtil;
 import in.vishal.blooms.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// @RestController API requests handle karta hai
 @RestController
+@RequestMapping("/api/chat")
 public class ChatController {
 
-    // Receptionist ne Manager (ChatService) ko bula liya
     @Autowired
     private ChatService chatService;
 
-    // ==========================================
-    // 1. REAL-TIME SEND MESSAGE (WebSocket API)
-    // ==========================================
-    // Jab frontend se WebSocket ke through naya message aayega, toh wo yahan aayega.
-    @MessageMapping("/chat")
-    public void receiveMessage(@Payload ChatMessageDto chatMessageDto) {
+    @Autowired
+    private JwtUtil jwtUtil;
 
-        // Receptionist ne seedha Manager (Service) ko kaam de diya
-        chatService.processAndSendMessage(chatMessageDto);
+    // ==========================================
+    // 1. SEND MESSAGE API (POST)
+    // ==========================================
+    // Swagger se message bhejne ke liye. Ye aage jaake WebSocket pe khud broadcast ho jayega.
+    @PostMapping("/send")
+    public ResponseEntity<ApiResponse<ChatMessageResponse>> sendMessage(
+            @RequestHeader("Authorization") String tokenHeader,
+            @RequestBody ChatMessageRequest request) {
+
+        // Token se "Bearer " hataya aur meri (sender) ID nikali
+        String token = tokenHeader.substring(7);
+        String myUserId = jwtUtil.extractUserId(token);
+
+        // Service ko bola "Bhai message send kar do"
+        return ResponseEntity.ok(chatService.sendMessage(myUserId, request));
     }
 
     // ==========================================
-    // 2. GET CHAT HISTORY (Normal REST API)
+    // 2. GET CHAT HISTORY API (GET)
     // ==========================================
-    // Jab user chat page open karega, toh purane message mangwane ke liye ye call hoga.
-    @GetMapping("/api/chat/history")
-    public ApiResponse<List<ChatMessage>> getHistory(
-            @RequestParam String senderId,
-            @RequestParam String receiverId) {
+    // Swagger pe kisi user ke sath purani chat dekhne ke liye
+    @GetMapping("/history")
+    public ResponseEntity<ApiResponse<List<ChatMessageResponse>>> getHistory(
+            @RequestHeader("Authorization") String tokenHeader,
+            @RequestParam String targetUserId) {
 
-        // Manager se history mangwa kar Frontend ko de di
-        return chatService.getChatHistory(senderId, receiverId);
+        // Meri ID token se nikali
+        String token = tokenHeader.substring(7);
+        String myUserId = jwtUtil.extractUserId(token);
+
+        // Service se history mangwa li
+        return ResponseEntity.ok(chatService.getChatHistory(myUserId, targetUserId));
     }
 }

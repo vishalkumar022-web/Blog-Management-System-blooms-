@@ -170,7 +170,7 @@ public class AdminService {
         categoryRepository.deleteById(categoryId);
         return new ApiResponse<>(true, "Category deleted", true);
     }
-    @CacheEvict(value = "category", allEntries = true) // ✅ Ye line jadu hai! Isse purana cache delete ho jayega
+    @CacheEvict(value = "categories", allEntries = true) // ✅ Ye line jadu hai! Isse purana cache delete ho jayega
     public ApiResponse<Boolean> updateCategoryStatus(String categoryId, String status) {
         // FIXED: Added '!' to check if status is NOT valid
         if (!isValidStatus(status)) throw new ApplicationException("Invalid Status Provided: " + status);
@@ -204,7 +204,7 @@ public class AdminService {
         subCategoryRepository.deleteById(subCategoryId);
         return new ApiResponse<>(true, "SubCategory deleted", true);
     }
-    @CacheEvict(value = "subcategory", allEntries = true) // ✅ Ye line jadu hai! Isse purana cache delete ho jayega
+    @CacheEvict(value = "subcategories", allEntries = true) // ✅ Ye line jadu hai! Isse purana cache delete ho jayega
     public ApiResponse<Boolean> updateSubCategoryStatus(String subCategoryId, String status) {
         // FIXED: Added '!' to check if status is NOT valid
         if (!isValidStatus(status)) throw new ApplicationException("Invalid Status Provided: " + status);
