@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class CategoryService {
@@ -53,7 +54,7 @@ public class CategoryService {
             category.setStatus(Status.INREVIEW.getDisplayName());
             category.setActive(true);
             category.setCreatedDTTM(LocalDateTime.now());
-            category.setId(String.valueOf(System.currentTimeMillis()));
+            category.setId(UUID.randomUUID().toString());
 // ✅ NEW: User ID save kar rahe hain
             category.setCreatedBy(categoryRequest.getUserId());
 

@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class BlogService {
@@ -92,7 +93,7 @@ public class BlogService {
             blog.setActive(true);
             blog.setCreatedDTTM(LocalDateTime.now());
             blog.setStatus(Status.INREVIEW.getDisplayName());
-            blog.setId(String.valueOf(System.currentTimeMillis()));
+            blog.setId(UUID.randomUUID().toString());
             blog.setCreatedBy(blogRequest.getUserId());
 
             blogRepository.save(blog);

@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class SubcategoryService {
@@ -59,7 +60,7 @@ public class SubcategoryService {
             sc.setDescription(subCategoryRequest.getSubCategoryDesc());
             sc.setUrl(subCategoryRequest.getSubCategoryUrl());
             sc.setCategoryId(subCategoryRequest.getCategoryId());
-            sc.setId(String.valueOf(System.currentTimeMillis()));
+            sc.setId(UUID.randomUUID().toString());
             sc.setActive(true);
             sc.setStatus(Status.INREVIEW.getDisplayName());
             sc.setCreatedDTTM(LocalDateTime.now());

@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserConnectionService {
@@ -50,7 +51,7 @@ public class UserConnectionService {
         }
 
         UserConnection connection = new UserConnection();
-        connection.setId(String.valueOf(System.currentTimeMillis()));
+        connection.setId(UUID.randomUUID().toString());
         connection.setFollowerId(myUserId);
         connection.setFollowingId(targetUserId);
         connection.setCreatedDTTM(LocalDateTime.now());

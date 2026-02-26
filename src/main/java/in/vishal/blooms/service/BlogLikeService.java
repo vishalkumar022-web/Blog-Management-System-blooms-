@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class BlogLikeService {
@@ -55,7 +56,7 @@ public class BlogLikeService {
             } else {
                 // LIKE
                 BlogLike like = new BlogLike();
-                like.setId(String.valueOf(System.currentTimeMillis()));
+                like.setId(UUID.randomUUID().toString());
                 like.setBlogId(blogId);
                 like.setUserId(userId);
                 like.setCreatedDTTM(LocalDateTime.now());

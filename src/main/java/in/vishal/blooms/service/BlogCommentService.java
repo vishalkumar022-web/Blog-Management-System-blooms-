@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class BlogCommentService {
@@ -47,7 +48,7 @@ public class BlogCommentService {
 
         try {
             BlogComment comment = new BlogComment();
-            comment.setId(String.valueOf(System.currentTimeMillis()));
+            comment.setId(UUID.randomUUID().toString());
             comment.setBlogId(blogId);
             comment.setUserId(userId);
             comment.setCommentText(text);
