@@ -9,6 +9,7 @@ import in.vishal.blooms.repository.BlogRepository;
 import in.vishal.blooms.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,7 @@ public class BlogLikeService {
         this.blogLikeRepository = blogLikeRepository;
         this.blogRepository = blogRepository;
     }
+    @CacheEvict(value = "blogs", allEntries = true) // ✅ Like/Unlike hote hi cache saaf
 
     public ApiResponse<String> likeOrUnlike(String blogId, String userId) {
         log.info("Toggle like called for BlogID: {}, UserID: {}", blogId, userId);

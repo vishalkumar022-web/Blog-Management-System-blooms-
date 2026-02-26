@@ -9,6 +9,7 @@ import in.vishal.blooms.repository.BlogRepository;
 import in.vishal.blooms.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,7 +28,7 @@ public class BlogCommentService {
         this.blogCommentRepository = blogCommentRepository;
         this.blogRepository = blogRepository;
     }
-
+    @CacheEvict(value = "blogs", allEntries = true) // ✅ Comment aate hi cache saaf
     public ApiResponse<String> addComment(String blogId, String userId, String text) {
         log.info("Adding comment on BlogID: {} by UserID: {}", blogId, userId);
 

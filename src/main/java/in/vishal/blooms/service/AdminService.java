@@ -8,6 +8,7 @@ import in.vishal.blooms.repository.*;
 import in.vishal.blooms.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -169,7 +170,7 @@ public class AdminService {
         categoryRepository.deleteById(categoryId);
         return new ApiResponse<>(true, "Category deleted", true);
     }
-
+    @CacheEvict(value = "category", allEntries = true) // ✅ Ye line jadu hai! Isse purana cache delete ho jayega
     public ApiResponse<Boolean> updateCategoryStatus(String categoryId, String status) {
         // FIXED: Added '!' to check if status is NOT valid
         if (!isValidStatus(status)) throw new ApplicationException("Invalid Status Provided: " + status);
@@ -203,7 +204,7 @@ public class AdminService {
         subCategoryRepository.deleteById(subCategoryId);
         return new ApiResponse<>(true, "SubCategory deleted", true);
     }
-
+    @CacheEvict(value = "subcategory", allEntries = true) // ✅ Ye line jadu hai! Isse purana cache delete ho jayega
     public ApiResponse<Boolean> updateSubCategoryStatus(String subCategoryId, String status) {
         // FIXED: Added '!' to check if status is NOT valid
         if (!isValidStatus(status)) throw new ApplicationException("Invalid Status Provided: " + status);
@@ -237,7 +238,7 @@ public class AdminService {
         blogRepository.deleteById(blogId);
         return new ApiResponse<>(true, "Blog deleted", true);
     }
-
+    @CacheEvict(value = "blogs", allEntries = true) // ✅ Ye line jadu hai! Isse purana cache delete ho jayega
     public ApiResponse<Boolean> updateBlogStatus(String blogId, String status) {
         // FIXED: Added '!' to check if status is NOT valid
         if (!isValidStatus(status)) throw new ApplicationException("Invalid Status Provided: " + status);
