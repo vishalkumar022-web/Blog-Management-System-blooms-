@@ -1,6 +1,12 @@
 package in.vishal.blooms.dto;
 
-public class CommentResponse {
+import java.io.Serializable; // ✅ 1. Ye import add kiya
+
+// ✅ 2. Yahan 'implements Serializable' add kiya
+public class CommentResponse implements Serializable {
+
+    // ✅ 3. Ye ID zaroori hoti hai Redis ke liye
+    private static final long serialVersionUID = 1L;
 
     private String userName;
     private String commentText;
