@@ -174,7 +174,7 @@ public class SubcategoryService {
     }
     @Caching(evict = {
             @CacheEvict(value = "subcategories", allEntries = true),
-            @CacheEvict(value = "users", allEntries = true) // ✅ Fix
+            @CacheEvict(value = "users", key = "#userId") // ✅ Fix
     })
     public ApiResponse<Boolean> deleteSubCategory(String userId, String Id) {
         log.info("Deleting subcategory ID: {}", Id);
@@ -199,7 +199,7 @@ public class SubcategoryService {
     }
     @Caching(evict = {
             @CacheEvict(value = "subcategories", allEntries = true),
-            @CacheEvict(value = "users", allEntries = true) // ✅ Fix
+            @CacheEvict(value = "users",key = "#request.userId") // ✅ Fix
     })
     public ApiResponse<SubCategoryResponse> updateSubCategory(SubcategoryRequest request) {
         log.info("Updating subcategory ID: {}", request.getSubCategoryId());
