@@ -213,7 +213,7 @@ public class SubcategoryService {
             throw new ApplicationException("SubCategory not found");
         }
         SubCategory subCategory = optionalSubCategory.get();
-        if(!subCategory.getCreatedBy().equals(request.getSubCategoryId())){
+        if(!subCategory.getCreatedBy().equals(request.getUserId())){
             throw new ApplicationException("Unauthorized to update this subcategory");
         }
 
