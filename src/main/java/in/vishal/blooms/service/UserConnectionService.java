@@ -8,10 +8,8 @@ import in.vishal.blooms.repository.UserConnectionRepository;
 import in.vishal.blooms.repository.UserRepository;
 import in.vishal.blooms.response.ApiResponse;
 
-// ==========================================
-// NAYA TOOL: CacheEvict (Notice Board saaf karne wala)
-// ==========================================
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,13 +28,11 @@ public class UserConnectionService {
         this.userRepository = userRepository;
     }
 
-    // ==========================================
-    // 1. FOLLOW KARNE KA LOGIC
-    // ==========================================
-    // @CacheEvict ka jaadu: Jaise hi koi follow button dabayega,
-    // ye line turant 'users' naam ke Notice Board (Redis cache) ko mita degi.
-    // Taki jab '/me' API dobara chale toh wo naya count database se gin kar laye!
-    @CacheEvict(value = "users", allEntries = true)
+    // ✅ FIXED: Sabka cache udane ki jagah sirf inn dono doston ka cache udaya (Speed x100)
+    @Caching(evict = {
+            @CacheEvict(value = "users", key = "#myUserId"),
+            @CacheEvict(value = "users", key = "#targetUserId")
+    })
     public ApiResponse<String> followUser(String myUserId, String targetUserId) {
 
         if (myUserId.equals(targetUserId)) {
@@ -64,19 +60,15 @@ public class UserConnectionService {
         return new ApiResponse<>(true, "Successfully followed " + targetUser.get().getUserName(), null);
     }
 
-    // ==========================================
-    // 2. UNFOLLOW KARNE KA LOGIC
-    // ==========================================
-    // Unfollow karne pe doston ki ginti kam hogi, isliye yahan bhi board (cache) saaf karna zaroori hai.
-    @CacheEvict(value = "users", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "users", key = "#myUserId"),
+            @CacheEvict(value = "users", key = "#targetUserId")
+    })
     public ApiResponse<String> unfollowUser(String myUserId, String targetUserId) {
         connectionRepo.deleteByFollowerIdAndFollowingId(myUserId, targetUserId);
         return new ApiResponse<>(true, "Unfollowed successfully", null);
     }
 
-    // ==========================================
-    // 3. MERE FOLLOWERS LAANE KA LOGIC
-    // ==========================================
     public ApiResponse<List<ConnectionResponse>> getFollowers(String userId) {
         List<UserConnection> connections = connectionRepo.findByFollowingId(userId);
         List<ConnectionResponse> responseList = new ArrayList<>();
@@ -96,9 +88,6 @@ public class UserConnectionService {
         return new ApiResponse<>(true, "Followers list fetched", responseList);
     }
 
-    // ==========================================
-    // 4. MERI FOLLOWING LIST LAANE KA LOGIC
-    // ==========================================
     public ApiResponse<List<ConnectionResponse>> getFollowing(String userId) {
         List<UserConnection> connections = connectionRepo.findByFollowerId(userId);
         List<ConnectionResponse> responseList = new ArrayList<>();

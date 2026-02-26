@@ -64,10 +64,10 @@ private JwtUtil jwtUtil;
 
     // 6. Delete
     @DeleteMapping
-    public ResponseEntity<ApiResponse<Boolean>> deleteSubCategory(@RequestHeader ("Authorization") String tokenHeader) {
+    public ResponseEntity<ApiResponse<Boolean>> deleteSubCategory(@RequestHeader ("Authorization") String tokenHeader , @RequestParam String subCategoryId) {
         String token = tokenHeader.substring(7);
-        String subCategoryId = jwtUtil.extractUserId(token);
+        String UserIdFromToken = jwtUtil.extractUserId(token);
 
-        return ResponseEntity.ok(subcategoryService.deleteSubCategory(subCategoryId));
+        return ResponseEntity.ok(subcategoryService.deleteSubCategory( UserIdFromToken ,subCategoryId));
     }
 }

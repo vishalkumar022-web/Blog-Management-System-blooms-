@@ -176,12 +176,15 @@ public class SubcategoryService {
             @CacheEvict(value = "subcategories", allEntries = true),
             @CacheEvict(value = "users", allEntries = true) // ✅ Fix
     })
-    public ApiResponse<Boolean> deleteSubCategory(String Id) {
+    public ApiResponse<Boolean> deleteSubCategory(String userId, String Id) {
         log.info("Deleting subcategory ID: {}", Id);
 
         Optional<SubCategory> optionalSubCategory = subCategoryRepository.findById(Id);
         if (optionalSubCategory.isEmpty()) {
             throw new ApplicationException("SubCategory not found for deletion");
+        }
+        if(!optionalSubCategory.get().getCreatedBy().equals(userId)){
+            throw new ApplicationException("Unauthorized to delete this subcategory");
         }
 
         try {
@@ -209,9 +212,13 @@ public class SubcategoryService {
         if (optionalSubCategory.isEmpty()) {
             throw new ApplicationException("SubCategory not found");
         }
+        SubCategory subCategory = optionalSubCategory.get();
+        if(!subCategory.getCreatedBy().equals(request.getSubCategoryId())){
+            throw new ApplicationException("Unauthorized to update this subcategory");
+        }
 
         try {
-            SubCategory subCategory = optionalSubCategory.get();
+
             subCategory.setName(request.getSubCategoryTittle());
             subCategory.setDescription(request.getSubCategoryDesc());
             subCategory.setUrl(request.getSubCategoryUrl());

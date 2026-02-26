@@ -155,28 +155,27 @@ public class CategoryService {
     }
 
     // UPDATE
+    // Baki sab same rahega bas Update aur Delete me ye change hai
+
     @Caching(evict = {
             @CacheEvict(value = "categories", allEntries = true),
-            @CacheEvict(value = "users", allEntries = true) // ✅ Fix: User profile refresh karne ke liye
+            @CacheEvict(value = "users", key = "#request.userId")
     })
     public ApiResponse<CategoryResponse> updateCategory(CategoryRequest request) {
-        log.info("Updating category ID: {}", request.getId());
-
-        if (request.getId() == null) {
-            throw new ApplicationException("Category ID is required for update");
-        }
-
+        if (request.getId() == null) throw new ApplicationException("Category ID is required for update");
         Optional<Category> optionalCategory = categoryRepository.findById(request.getId());
-        if (optionalCategory.isEmpty()) {
-            throw new ApplicationException("Category not found");
+        if (optionalCategory.isEmpty()) throw new ApplicationException("Category not found");
+
+        Category category = optionalCategory.get();
+        // ✅ FIXED: Hakker Proofing
+        if (!category.getCreatedBy().equals(request.getUserId())) {
+            throw new ApplicationException("Bhai, tumne ye category nahi banayi hai! Update allowed nahi hai.");
         }
 
         try {
-            Category category = optionalCategory.get();
             category.setName(request.getTitle());
             category.setDescription(request.getDesc());
             category.setImageUrl(request.getCategoryUrl());
-
             categoryRepository.save(category);
 
             CategoryResponse response = new CategoryResponse();
@@ -184,36 +183,31 @@ public class CategoryService {
             response.setTitle(category.getName());
             response.setDesc(category.getDescription());
             response.setCategoryUrl(category.getImageUrl());
-
             return new ApiResponse<>(true, "Category updated successfully", response);
-
         } catch (Exception e) {
-            log.error("Update failed: {}", e.getMessage());
             throw new ApplicationException("Failed to update category");
         }
     }
 
-    // DELETE
     @Caching(evict = {
             @CacheEvict(value = "categories", allEntries = true),
-            @CacheEvict(value = "users", allEntries = true) // ✅ Fix: User profile refresh karne ke liye
+            @CacheEvict(value = "users", key = "#userId")
     })
-
-    public ApiResponse<Boolean> deleteCategory(String categoryId) {
-        log.info("Deleting category ID: {}", categoryId);
-
+    public ApiResponse<Boolean> deleteCategory(String categoryId, String userId) {
         Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
-        if (optionalCategory.isEmpty()) {
-            throw new ApplicationException("Category not found for deletion");
+        if (optionalCategory.isEmpty()) throw new ApplicationException("Category not found for deletion");
+
+        Category category = optionalCategory.get();
+        // ✅ FIXED: Hakker Proofing
+        if (!category.getCreatedBy().equals(userId)) {
+            throw new ApplicationException("Bhai, tumne ye category nahi banayi hai! Delete allowed nahi hai.");
         }
 
         try {
-            Category category = optionalCategory.get();
             category.setActive(false);
             categoryRepository.save(category);
             return new ApiResponse<>(true, "Category deleted successfully", true);
         } catch (Exception e) {
-            log.error("Delete failed: {}", e.getMessage());
             throw new ApplicationException("Failed to delete category");
         }
     }

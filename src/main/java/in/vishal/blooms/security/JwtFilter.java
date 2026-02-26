@@ -28,7 +28,13 @@ public class JwtFilter extends OncePerRequestFilter {
         // 1️⃣ PUBLIC URLS (Login, Register, Swagger) - Inpe koi rok-tok nahi
         if (path.startsWith("/api/auth")
                 || path.startsWith("/swagger-ui")
-                || path.startsWith("/v3/api-docs")) {
+                || path.startsWith("/v3/api-docs")
+                || (request.getMethod().equals("GET") && path.startsWith("/api/BLog"))
+                || (request.getMethod().equals("GET") && path.startsWith("/api/Category/all"))
+                || (request.getMethod().equals("GET") && path.startsWith("/api/SubCategory/all"))
+                || (request.getMethod().equals("GET") && path.startsWith("/api/User/search"))
+                || (request.getMethod().equals("GET") && path.startsWith("/api/connection/followers"))
+                || (request.getMethod().equals("GET") && path.startsWith("/api/connection/following"))) {
 
             filterChain.doFilter(request, response);
             return;

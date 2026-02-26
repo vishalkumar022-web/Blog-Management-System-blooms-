@@ -65,12 +65,13 @@ public class CategoryController {
     }
 
     // 6. Delete
+    // Baki sab same rahega bas Delete me ye change hai
     @DeleteMapping
     public ResponseEntity<ApiResponse<Boolean>> deleteCategory(@RequestHeader ("Authorization") String tokenHeader , @RequestParam String categoryId) {
         String token = tokenHeader.substring(7);
         String userIdFromToken = jwtUtil.extractUserId(token);
-
-        return ResponseEntity.ok(categoryService.deleteCategory(categoryId));
+        // ✅ FIXED: Pass userId to check authorization
+        return ResponseEntity.ok(categoryService.deleteCategory(categoryId, userIdFromToken));
     }
 
     // 7. Get Subcategories

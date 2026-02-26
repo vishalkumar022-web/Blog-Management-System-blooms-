@@ -3,11 +3,16 @@ package in.vishal.blooms.models;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.CompoundIndex; // ✅ Naya Import
 import java.time.LocalDateTime;
 
 // @Document MongoDB ko batata hai ki "Bhai, database me ek naya table banao jiska naam 'UserConnection' hoga"
 // AGAR NAHI HOTA: Toh data save kahan hota? MongoDB isko pehchanta hi nahi.
 @Document(collection = "UserConnection")
+// ✅ FIXED: Database level pe rok diya taaki koi fast click karke 2 baar follow na kar sake
+@CompoundIndex(name = "follower_following_idx", def = "{'followerId': 1, 'followingId': 1}", unique = true)
+
+
 public class UserConnection {
 
     // @Id batata hai ki ye is table ki primary key (unique pehchaan) hai.

@@ -27,7 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
+import java.util.concurrent.ConcurrentHashMap; // ✅ Naya Import
 import java.util.*;
 
 // @Service Spring Boot ko batata hai ki "Bhai, ye file dimaag (logic) lagane wali file hai."
@@ -132,10 +132,8 @@ public class AuthService {
     }
 
     // ================= FORGOT PASSWORD LOGIC =================
-    // Ye 'Map' ek temporary diary hai. Isme hum save karenge "Kis email pe kya OTP bheja hai".
-    // NAHI HOTA TOH: Hum bhool jate ki user ko kya OTP bheja tha, aur verify nahi kar paate.
-    private Map<String, String> otpStorage = new HashMap<>();
-
+    // ✅ FIXED: ConcurrentHashMap use kiya taaki server hang na ho
+    private Map<String, String> otpStorage = new ConcurrentHashMap<>();
     // Email bhejne wala main function
     public ApiResponse<String> sendOtp(String email) {
 
