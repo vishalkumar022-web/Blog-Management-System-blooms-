@@ -29,6 +29,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if (path.startsWith("/api/auth")
                 || path.startsWith("/swagger-ui")
                 || path.startsWith("/v3/api-docs")
+                || path.startsWith("/ws") // ✅ WebSocket ka raasta open kar diya
                 || (request.getMethod().equals("GET") && path.startsWith("/api/BLog"))
                 || (request.getMethod().equals("GET") && path.startsWith("/api/Category/all"))
                 || (request.getMethod().equals("GET") && path.startsWith("/api/SubCategory/all"))
