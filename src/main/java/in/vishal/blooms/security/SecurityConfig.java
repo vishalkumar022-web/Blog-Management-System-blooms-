@@ -25,29 +25,30 @@ public class SecurityConfig {
                 .cors(cors -> cors.configure(http))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // ✅ JADU YAHAN HAI: Dono Guards (401 aur 403) ko unka message sikha diya
                 .exceptionHandling(ex -> ex
-
-                        // GUARD 1: Jab Token na ho ya galat ho (401 UNAUTHORIZED)
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.setContentType("application/json");
                             response.getWriter().write("{\"success\": false, \"errorMessage\": \"Missing or Invalid Authorization header\", \"data\": null}");
                         })
-
-                        // GUARD 2: Jab Token sahi ho par Role Admin na ho (403 FORBIDDEN)
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                             response.setContentType("application/json");
-                            // Tumhara manpasand purana message yahan aayega!
                             response.getWriter().write("{\"success\": false, \"errorMessage\": \"Access Denied: Only Admins can access this area!\", \"data\": null}");
                         })
                 )
 
-                // ✅ BAAKI SAARI URL ROUTING EKDUM PERFECT HAI
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        // ✅ JADU YAHAN HAI: Swagger ki saari files aur main HTML page ko properly ALLOW kar diya
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
+
                         .requestMatchers("/ws/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/BLog/**").permitAll()
@@ -57,9 +58,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/connection/followers").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/connection/following").permitAll()
 
-                        // Yahan Spring check karega ki role "admin" hai ya nahi
                         .requestMatchers("/api/Admin/**").hasAuthority("admin")
-
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
