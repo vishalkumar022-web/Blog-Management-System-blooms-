@@ -5,10 +5,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -23,70 +28,44 @@ public class JwtFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String path = request.getServletPath();
-
-        // 1️⃣ PUBLIC URLS (Login, Register, Swagger) - Inpe koi rok-tok nahi
-        if (path.startsWith("/api/auth")
-                || path.startsWith("/swagger-ui")
-                || path.startsWith("/v3/api-docs")
-                || path.startsWith("/ws") // ✅ WebSocket ka raasta open kar diya
-                || (request.getMethod().equals("GET") && path.startsWith("/api/BLog"))
-                || (request.getMethod().equals("GET") && path.startsWith("/api/Category/all"))
-                || (request.getMethod().equals("GET") && path.startsWith("/api/SubCategory/all"))
-                || (request.getMethod().equals("GET") && path.startsWith("/api/User/search"))
-                || (request.getMethod().equals("GET") && path.startsWith("/api/connection/followers"))
-                || (request.getMethod().equals("GET") && path.startsWith("/api/connection/following"))) {
-
-            filterChain.doFilter(request, response);
-            return;
-        }
-
+        // ✅ 1. Request me se Token nikalo
         String authHeader = request.getHeader("Authorization");
 
-        // 2️⃣ TOKEN CHECK: Token hai ya nahi?
+        // ✅ 2. Agar token nahi hai, toh chup-chap aage bhej do.
+        // (Daro mat! Agar ye private URL hogi, toh SecurityConfig isko khud aage jaakar laat maar dega. Public hogi toh nikal jayega.)
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
-            response.getWriter().write("Missing Authorization header");
+            filterChain.doFilter(request, response);
             return;
         }
 
         String token = authHeader.substring(7);
 
-        // 3️⃣ VALIDITY CHECK: Token expire toh nahi hua?
-        if (!jwtUtil.isTokenValid(token)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
-            response.getWriter().write("Invalid or expired token");
-            return;
-        }
+        // ✅ 3. Token ki Validity Check karo
+        if (jwtUtil.isTokenValid(token)) {
 
-        // =================================================================
-        // 🚀 ROLE BASED ACCESS CONTROL (RBAC) - Modified Logic
-        // =================================================================
+            // Token me se User ka ID aur Role nikalo
+            String userId = jwtUtil.extractUserId(token);
+            String role = jwtUtil.extractRole(token);
 
-        // Token se Role nikalo (e.g., "admin" ya "user")
-        String role = jwtUtil.extractRole(token);
+            // ✅ 4. SPRING SECURITY KO BATAO KI YE BANDA ASLI HAI! (The VIP Register)
+            // Agar SecurityContextHolder (VIP Register) me iska naam nahi likha hai, toh likh do.
+            if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-        // LOGIC: Sirf Admin Area ("/api/Admin") ko protect karna hai.
+                // Role ko authority me badalna taaki Spring Security ko samajh aaye (jaise "admin" ya "user")
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
 
-        if (path.startsWith("/api/Admin")) {
-            // Agar koi /api/Admin access kar raha hai, toh check karo wo ADMIN hai ya nahi.
-            if (role == null || !role.equalsIgnoreCase("admin")) {
+                // Authentication object banana (Ye banda ab officially authenticated hai)
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userId, null, Collections.singletonList(authority));
 
-                // Agar wo Admin nahi hai (User hai), toh yahin rok do.
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403 Forbidden
-                response.getWriter().write("Access Denied: Only Admins can access this area!");
-                return;
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                // VIP Register me Entry pakki kar di! Ab SecurityConfig isko nahi rokega.
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
 
-        // NOTE: Agar path "/api/User" ya "/api/BLog" hai, toh hum check nahi laga rahe.
-        // Iska matlab:
-        // - Agar User aayega -> Access milega.
-        // - Agar Admin aayega -> Access milega (Kyunki Admin ko sab allowed hai).
-
-        // =================================================================
-
-        // ✅ Sab sahi hai -> Request aage jane do
+        // ✅ 5. Sab check ho gaya, ab request ko aage processing ke liye bhej do
         filterChain.doFilter(request, response);
     }
 }

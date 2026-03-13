@@ -7,7 +7,7 @@ public class ApiResponse<T> implements Serializable { // ✅ Implements Serializ
     private static final long serialVersionUID = 1L; // ✅ Version ID
 
     private boolean success;
-    private String errorMessage;
+    private String Message;
     private T data;
 
     // ✅ Default Constructor
@@ -17,7 +17,7 @@ public class ApiResponse<T> implements Serializable { // ✅ Implements Serializ
     // ✅ Parameterized Constructor
     public ApiResponse(boolean success, String message, T data) {
         this.success = success;
-        this.errorMessage = message;
+        this.Message = message;
         this.data = data;
     }
 
@@ -30,12 +30,12 @@ public class ApiResponse<T> implements Serializable { // ✅ Implements Serializ
         this.success = success;
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
+    public String getMessage() {
+        return Message;
     }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
+    public void setMessage(String message) {
+        this.Message = message;
     }
 
     public T getData() {
