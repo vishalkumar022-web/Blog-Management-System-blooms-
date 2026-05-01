@@ -37,14 +37,21 @@ public class RedisConfig {
         configuration.setUsername(redisUsername);
         configuration.setPassword(RedisPassword.of(redisPassword));
 
-        LettuceClientConfiguration.LettuceClientConfigurationBuilder builder = LettuceClientConfiguration.builder()
-                .commandTimeout(Duration.ofMillis(timeout));
-
+        LettuceClientConfiguration clientConfiguration;
         if (sslEnabled) {
-            builder.useSsl();
+            clientConfiguration = LettuceClientConfiguration.builder()
+                    .commandTimeout(Duration.ofMillis(timeout))
+                    .useSsl()
+                    .and()
+                    .build();
+        } else {
+            clientConfiguration = LettuceClientConfiguration.builder()
+                    .commandTimeout(Duration.ofMillis(timeout))
+                    .build();
         }
 
-        LettuceClientConfiguration clientConfiguration = builder.build();
-        return new LettuceConnectionFactory(configuration, clientConfiguration);
+        LettuceConnectionFactory factory = new LettuceConnectionFactory(configuration, clientConfiguration);
+        factory.setShareNativeConnection(true); // Best practice for lettuce
+        return factory;
     }
 }
