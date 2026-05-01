@@ -13,12 +13,14 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     // Ye function hamare chat "Tower" ka rasta (URL) banata hai.
+    // ✅ Properties se URL uthaya
+    @org.springframework.beans.factory.annotation.Value("${frontend.url}")
+    private String frontendUrl;
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // "/ws": Tumhara React frontend is URL par aakar backend se phone call connect karega.
-        // setAllowedOrigins("*"): Iska matlab kisi bhi website se log chat connect kar sakte hain (Security block nahi karegi).
-        // withSockJS(): Agar kisi ka internet/browser WebSocket support nahi karta, toh ye usko backup connection de deta hai taaki chat na ruke.
-        registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS();
+        // ✅ FIXED: "*" hatakar frontendUrl laga diya. Koi farzi website hamari chat hack nahi kar payegi.
+        registry.addEndpoint("/ws").setAllowedOrigins(frontendUrl).withSockJS();
     }
 
     // Ye function Messages ko route (sahi raste par bhejna) karta hai.

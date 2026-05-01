@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -12,12 +13,17 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // 🔐 MIN 32 chars REQUIRED
-    private static final String SECRET =
-            "blooms_secret_key_blooms_secret_key_123456";
+    // ✅ Properties file se key utha rahe hain!
+    @Value("${jwt.secret}")
+    private String secretKey;
 
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    // Ek helper method jo key banayega
+    private Key getKey() {
+        return Keys.hmacShaKeyFor(secretKey.getBytes());
+    }
 
+    // Neeche jahan bhi 'key' use hua tha (generateToken aur getClaims me),
+    // wahan 'key' ki jagah 'getKey()' likhna hoga.
     private final long EXPIRATION_TIME = 60 * 60 * 1000; // 1 hour
 
     // ✅ TOKEN GENERATE
@@ -28,7 +34,7 @@ public class JwtUtil {
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -54,7 +60,7 @@ public class JwtUtil {
 
     private Claims getClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(getKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

@@ -12,6 +12,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -108,7 +109,11 @@ public class AdminService {
         if (user.getRole().equalsIgnoreCase(Role.ADMIN.getDisplayName())) {
             user.setName(userRequest.getName());
             user.setEmail(userRequest.getEmail());
-            user.setPassword(userRequest.getPassword());
+            // ✅ FIXED: Password ko Hash (Encode) karke save kiya!
+            if (userRequest.getPassword() != null && !userRequest.getPassword().isEmpty()) {
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                user.setPassword(encoder.encode(userRequest.getPassword()));
+            }
             user.setUserName(userRequest.getUserName());
             user.setProfileUrl(userRequest.getProfileUrl());
             user.setPhoneNumber(userRequest.getPhoneNumber());

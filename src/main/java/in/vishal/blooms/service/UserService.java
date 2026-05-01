@@ -32,6 +32,7 @@ public class UserService {
         this.userConnectionRepository = userConnectionRepository;
     }
 
+
     @Cacheable(value = "users", key = "#userId")
     public ApiResponse<UserResponse> getUserById(String userId) {
         log.info("Fetching user by ID: {}", userId);

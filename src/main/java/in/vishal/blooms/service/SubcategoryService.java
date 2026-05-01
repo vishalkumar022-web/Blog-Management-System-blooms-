@@ -43,9 +43,10 @@ public class SubcategoryService {
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "subcategories", allEntries = true),
-            @CacheEvict(value = "users", allEntries = true) // ✅ Fix
+            @CacheEvict(value = "categories", allEntries = true),
+            @CacheEvict(value = "users", key = "#SubcategoryRequest.userId") // ✅ FIXED: Sirf is bande ka cache udao
     })
+
     public ApiResponse<String> createSubCategory(SubcategoryRequest subCategoryRequest) {
         log.info("Creating subcategory: {}", subCategoryRequest.getSubCategoryTittle());
 

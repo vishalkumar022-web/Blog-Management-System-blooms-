@@ -42,7 +42,7 @@ public class CategoryService {
     // CREATE
     @Caching(evict = {
             @CacheEvict(value = "categories", allEntries = true),
-            @CacheEvict(value = "users", allEntries = true) // ✅ Fix: User profile refresh karne ke liye
+            @CacheEvict(value = "users", key = "#categoryRequest.userId") // ✅ FIXED: Sirf is bande ka cache udao
     })
     public ApiResponse<String> createCategory(CategoryRequest categoryRequest) {
         log.info("Creating category: {}", categoryRequest.getTitle());
