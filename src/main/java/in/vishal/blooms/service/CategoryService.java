@@ -12,9 +12,7 @@ import in.vishal.blooms.repository.SubCategoryRepository;
 import in.vishal.blooms.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -40,10 +38,7 @@ public class CategoryService {
     }
 
     // CREATE
-    @Caching(evict = {
-            @CacheEvict(value = "categories", allEntries = true),
-            @CacheEvict(value = "users", key = "#categoryRequest.userId") // ✅ FIXED: Sirf is bande ka cache udao
-    })
+
     public ApiResponse<String> createCategory(CategoryRequest categoryRequest) {
         log.info("Creating category: {}", categoryRequest.getTitle());
         try {
@@ -94,7 +89,7 @@ public class CategoryService {
     }
 
     // GET ALL (Paginated)
-    @Cacheable(value = "categories", key = "#page + '-' + #size") // ✅ Seedha Redis (RAM) se fast data laao
+
     public ApiResponse<List<CategoryResponse>> getAllCategories(int page, int size) {
         log.info("Fetching categories page: {}, size: {}", page, size);
         System.out.println("FOR testinng redis caching: Fetching categories from DB for page: " + page + ", size: " + size); // ✅ Console log for testing cache
@@ -158,10 +153,7 @@ public class CategoryService {
     // UPDATE
     // Baki sab same rahega bas Update aur Delete me ye change hai
 
-    @Caching(evict = {
-            @CacheEvict(value = "categories", allEntries = true),
-            @CacheEvict(value = "users", key = "#request.userId")
-    })
+
     public ApiResponse<CategoryResponse> updateCategory(CategoryRequest request) {
         if (request.getId() == null) throw new ApplicationException("Category ID is required for update");
         Optional<Category> optionalCategory = categoryRepository.findById(request.getId());
@@ -190,10 +182,7 @@ public class CategoryService {
         }
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = "categories", allEntries = true),
-            @CacheEvict(value = "users", key = "#userId")
-    })
+
     public ApiResponse<Boolean> deleteCategory(String categoryId, String userId) {
         Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
         if (optionalCategory.isEmpty()) throw new ApplicationException("Category not found for deletion");

@@ -8,8 +8,7 @@ import in.vishal.blooms.repository.UserConnectionRepository;
 import in.vishal.blooms.repository.UserRepository;
 import in.vishal.blooms.response.ApiResponse;
 
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Caching;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,10 +29,7 @@ public class UserConnectionService {
     }
 
     // ✅ FIXED: Sabka cache udane ki jagah sirf inn dono doston ka cache udaya (Speed x100)
-    @Caching(evict = {
-            @CacheEvict(value = "users", key = "#myUserId"),
-            @CacheEvict(value = "users", key = "#targetUserId")
-    })
+
     public ApiResponse<String> followUser(String myUserId, String targetUserId) {
 
         if (myUserId.equals(targetUserId)) {
@@ -61,10 +57,7 @@ public class UserConnectionService {
         return new ApiResponse<>(true, "Successfully followed " + targetUser.get().getUserName(), null);
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = "users", key = "#myUserId"),
-            @CacheEvict(value = "users", key = "#targetUserId")
-    })
+
     public ApiResponse<String> unfollowUser(String myUserId, String targetUserId) {
         connectionRepo.deleteByFollowerIdAndFollowingId(myUserId, targetUserId);
         return new ApiResponse<>(true, "Unfollowed successfully", null);

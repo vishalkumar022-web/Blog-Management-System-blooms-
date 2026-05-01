@@ -7,7 +7,7 @@ import in.vishal.blooms.repository.*;
 import in.vishal.blooms.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.*;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ public class UserService {
     }
 
 
-    @Cacheable(value = "users", key = "#userId")
+
     public ApiResponse<UserResponse> getUserById(String userId) {
         log.info("Fetching user by ID: {}", userId);
         try {
@@ -69,7 +69,7 @@ public class UserService {
         }
     }
 
-    @CacheEvict(value = "users", allEntries = true)
+
     public ApiResponse<UserResponse> updateUser(UserRequest userRequest) {
         User user = userRepository.findById(userRequest.getUserId())
                 .orElseThrow(() -> new ApplicationException("User not found"));
@@ -103,7 +103,7 @@ public class UserService {
         return new ApiResponse<>(true, "User updated successfully", res);
     }
 
-    @CacheEvict(value = "users", allEntries = true)
+
     public ApiResponse<Boolean> deleteUser(String userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ApplicationException("User not found"));
         if (user.getRole() != null && user.getRole().equalsIgnoreCase(Role.USER.getDisplayName())) {

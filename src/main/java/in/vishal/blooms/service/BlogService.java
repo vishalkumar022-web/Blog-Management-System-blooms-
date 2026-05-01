@@ -9,9 +9,7 @@ import in.vishal.blooms.models.*;
 import in.vishal.blooms.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -44,10 +42,7 @@ public class BlogService {
         this.userRepository = userRepository;
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = "blogs", allEntries = true),
-            @CacheEvict(value = "users", key = "#blogRequest.userId") // ✅ Smart Cache: Sirf is user ka cache clear karo
-    })
+
     public ApiResponse<String> createBlog(BlogRequest blogRequest) {
         log.info("Creating blog with title: {}", blogRequest.getBlogTitle());
         boolean categoryExists = false;
@@ -105,7 +100,7 @@ public class BlogService {
         }
     }
 
-    @Cacheable(value = "blogs", key = "#page + '-' + #size")
+
     public ApiResponse<List<BlogResponse>> getBlogs(int page, int size) {
         log.info("Fetching blogs for page: {}, size: {}", page, size);
         try {
@@ -179,10 +174,7 @@ public class BlogService {
         }
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = "blogs", allEntries = true),
-            @CacheEvict(value = "users", key = "#request.userId")
-    })
+
     public ApiResponse<BlogResponse> updateBlog(BlogRequest request) {
         Optional<Blog> optionalBlog = blogRepository.findById(request.getBlogId());
         if (optionalBlog.isEmpty()) {
@@ -221,10 +213,7 @@ public class BlogService {
         }
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = "blogs", allEntries = true),
-            @CacheEvict(value = "users", key = "#userId")
-    })
+
     // ✅ FIXED: userId add kiya as parameter
     public ApiResponse<Boolean> deleteBlog(String blogId, String userId) {
         Optional<Blog> optionalBlog = blogRepository.findById(blogId);
