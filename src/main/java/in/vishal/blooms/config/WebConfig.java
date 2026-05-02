@@ -9,7 +9,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig {
 
-    // ✅ Properties se URL uthaya
     @Value("${frontend.url}")
     private String frontendUrl;
 
@@ -19,7 +18,8 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins(frontendUrl) // ✅ Ab ye dynamic hai!
+                        // ✅ FIX: Render URL ke sath-sath VS Code Live Server ko bhi VIP entry de di
+                        .allowedOrigins(frontendUrl, "http://127.0.0.1:5500", "http://localhost:5500")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
