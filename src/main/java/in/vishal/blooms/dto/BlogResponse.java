@@ -9,6 +9,12 @@ public class BlogResponse implements Serializable { // ✅ Change here
     private static final long serialVersionUID = 1L;
 
     // ... fields getters setters same
+// Baki variables ke sath isko daal de
+    private java.time.LocalDateTime createdDTTM;
+
+    // Neeche Getter-Setter laga de
+    public java.time.LocalDateTime getCreatedDTTM() { return createdDTTM; }
+    public void setCreatedDTTM(java.time.LocalDateTime createdDTTM) { this.createdDTTM = createdDTTM; }
 
     private String blogId;
     private String title;

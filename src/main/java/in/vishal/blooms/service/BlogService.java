@@ -118,6 +118,7 @@ public class BlogService {
                 blogResponse.setContent(blog.getContent());
                 blogResponse.setAuthorId(blog.getAuthorId());
                 blogResponse.setStatus(blog.getStatus());
+                blogResponse.setCreatedDTTM(blog.getCreatedDTTM()); // Yahi line time ko frontend ke dabbe me dalegi
 
                 categoryRepository.findById(blog.getCategoryId()).ifPresent(category -> blogResponse.setCategoryName(category.getName()));
                 subCategoryRepository.findById(blog.getSubcategoryId()).ifPresent(sc -> blogResponse.setSubCategoryName(sc.getName()));
@@ -163,7 +164,7 @@ public class BlogService {
                 blogResponse.setDescription(blog.getDescription());
                 blogResponse.setContent(blog.getContent());
                 blogResponse.setAuthorId(blog.getAuthorId());
-
+                blogResponse.setCreatedDTTM(blog.getCreatedDTTM()); // Yahi line time ko frontend ke dabbe me dalegi
                 categoryRepository.findById(blog.getCategoryId()).ifPresent(category -> blogResponse.setCategoryName(category.getName()));
                 subCategoryRepository.findById(blog.getSubcategoryId()).ifPresent(sc -> blogResponse.setSubCategoryName(sc.getName()));
                 responses.add(blogResponse);
