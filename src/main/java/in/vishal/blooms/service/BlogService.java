@@ -167,6 +167,28 @@ public class BlogService {
                 blogResponse.setCreatedDTTM(blog.getCreatedDTTM()); // Yahi line time ko frontend ke dabbe me dalegi
                 categoryRepository.findById(blog.getCategoryId()).ifPresent(category -> blogResponse.setCategoryName(category.getName()));
                 subCategoryRepository.findById(blog.getSubcategoryId()).ifPresent(sc -> blogResponse.setSubCategoryName(sc.getName()));
+
+
+                List<String> likedUserNames = new ArrayList<>();
+                List<BlogLike> blogLikes = blogLikeRepository.findByBlogId(blog.getId());
+                for (BlogLike blogLike : blogLikes) {
+                    userRepository.findById(blogLike.getUserId()).ifPresent(user -> likedUserNames.add(user.getUserName()));
+                }
+                blogResponse.setLikedByUsers(likedUserNames);
+                blogResponse.setLikeCount(likedUserNames.size());
+
+                List<CommentResponse> commentResponses = new ArrayList<>();
+                List<BlogComment> comments = blogCommentRepository.findByBlogId(blog.getId());
+                for (BlogComment comment : comments) {
+                    CommentResponse cr = new CommentResponse();
+                    cr.setCommentText(comment.getCommentText());
+                    userRepository.findById(comment.getUserId()).ifPresent(user -> cr.setUserName(user.getUserName()));
+                    commentResponses.add(cr);
+                }
+                blogResponse.setComments(commentResponses);
+                blogResponse.setCommentCount(commentResponses.size());
+
+
                 responses.add(blogResponse);
             }
             return new ApiResponse<>(true, "Search results fetched", responses);
