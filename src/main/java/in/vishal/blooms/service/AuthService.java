@@ -62,6 +62,8 @@ public class AuthService {
             user.setName(userRequest.getName());
             user.setUserName(userRequest.getUserName());
             user.setProfileUrl(userRequest.getProfileUrl());
+            user.setProfileBackgroundUrl(userRequest.getProfileBackgroundUrl()); // Naya mapping Request se Model me
+            user.setAboutMe(userRequest.getAboutMe()); // Naya mapping Request se Model me
             user.setPassword(passwordEncoder.encode(userRequest.getPassword())); // ✅ Password hash kar diya
             user.setPhoneNumber(userRequest.getPhoneNumber());
             user.setRole(userRequest.getRole());
@@ -93,6 +95,8 @@ public class AuthService {
         response.setName(user.getName());
         response.setPhoneNumber(user.getPhoneNumber());
         response.setProfileUrl(user.getProfileUrl());
+        response.setProfileBackgroundUrl(user.getProfileBackgroundUrl()); // Naya mapping Model se Response me
+        response.setAboutMe(user.getAboutMe()); // Naya mapping Model se Response me
         response.setRole(user.getRole());
         response.setToken(token);
 

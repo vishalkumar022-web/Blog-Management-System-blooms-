@@ -112,4 +112,18 @@ public class UserResponse implements Serializable { // ✅ IMPLEMENTS SERIALIZAB
 
     public List<String> getMyCreatedBlogs() { return myCreatedBlogs; }
     public void setMyCreatedBlogs(List<String> myCreatedBlogs) { this.myCreatedBlogs = myCreatedBlogs; }
+
+    // UserResponse.java file me bhi sab ke niche ye daal do:
+
+    private String profileBackgroundUrl;
+    private String aboutMe;
+
+    // Getters aur Setters bhi niche generate kar do:
+    public String getProfileBackgroundUrl() { return profileBackgroundUrl; }
+    public void setProfileBackgroundUrl(String profileBackgroundUrl) { this.profileBackgroundUrl = profileBackgroundUrl; }
+
+    public String getAboutMe() { return aboutMe; }
+    public void setAboutMe(String aboutMe) { this.aboutMe = aboutMe; }
+
+
 }

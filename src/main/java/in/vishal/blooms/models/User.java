@@ -17,6 +17,20 @@ public class User {
     private String phoneNumber;
     private String role ;
 
+    // User.java file ke andar ke fields jahan khatam ho rahe hain (jaise phone, role)
+// wahan ye 2 naye line chipka do:
+
+    private String profileBackgroundUrl; // User ki Profile ke piche lagne wali photo ka link
+    private String aboutMe; // User apne bare me jo likhega
+
+    // Phir, iske Getters aur Setters bhi generate kar lena niche.
+    public String getProfileBackgroundUrl() { return profileBackgroundUrl; }
+    public void setProfileBackgroundUrl(String profileBackgroundUrl) { this.profileBackgroundUrl = profileBackgroundUrl; }
+
+    public String getAboutMe() { return aboutMe; }
+    public void setAboutMe(String aboutMe) { this.aboutMe = aboutMe; }
+
+
     public String getRole() {
         return role;
     }

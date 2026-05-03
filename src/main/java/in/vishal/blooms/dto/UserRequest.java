@@ -90,4 +90,20 @@ public class UserRequest {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    // UserRequest.java file me bhi sab ke niche ye daal do:
+
+    private String profileBackgroundUrl;
+    private String aboutMe;
+
+    // Getters aur Setters bhi niche generate kar do:
+    public String getProfileBackgroundUrl() { return profileBackgroundUrl; }
+    public void setProfileBackgroundUrl(String profileBackgroundUrl) { this.profileBackgroundUrl = profileBackgroundUrl; }
+
+    public String getAboutMe() { return aboutMe; }
+    public void setAboutMe(String aboutMe) { this.aboutMe = aboutMe; }
+
+
+
 }
+
