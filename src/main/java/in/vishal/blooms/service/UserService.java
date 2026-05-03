@@ -58,7 +58,9 @@ public class UserService {
             userResponse.setMyCreatedCategories(categoryRepository.findByCreatedBy(userId).stream().filter(Category::isActive).map(Category::getName).toList());
             userResponse.setMyCreatedSubCategories(subCategoryRepository.findByCreatedBy(userId).stream().filter(SubCategory::getActive).map(SubCategory::getName).toList());
             userResponse.setMyCreatedBlogs(blogRepository.findByAuthorId(userId).stream().filter(Blog::getActive).map(Blog::getTitle).toList());
-
+            // 🟢 NAYA LOGIC: Database (user) se nikal kar Frontend parcel (response) me daalo
+            userResponse.setProfileBackgroundUrl(user.getProfileBackgroundUrl());
+            userResponse.setAboutMe(user.getAboutMe());
             userResponse.setFollowerCount(userConnectionRepository.countByFollowingId(userId));
             userResponse.setFollowingCount(userConnectionRepository.countByFollowerId(userId));
 
