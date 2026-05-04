@@ -90,6 +90,8 @@ public class BlogService {
             blog.setStatus(Status.INREVIEW.getDisplayName());
             blog.setId(UUID.randomUUID().toString());
             blog.setCreatedBy(blogRequest.getUserId());
+            blog.setBlogImageUrl(blogRequest.getBlogImageUrl()); // Frontend se jo URL aaya, use DB me daalo
+
 
             blogRepository.save(blog);
             return new ApiResponse<>(true, "Blog created successfully with ID: " + blog.getId(), null);
@@ -118,6 +120,7 @@ public class BlogService {
                 blogResponse.setContent(blog.getContent());
                 blogResponse.setAuthorId(blog.getAuthorId());
                 blogResponse.setStatus(blog.getStatus());
+                blogResponse.setBlogImageUrl(blog.getBlogImageUrl()); // DB se URL nikal kar Frontend ko bhejo
                 blogResponse.setCreatedDTTM(blog.getCreatedDTTM()); // Yahi line time ko frontend ke dabbe me dalegi
 
                 categoryRepository.findById(blog.getCategoryId()).ifPresent(category -> blogResponse.setCategoryName(category.getName()));
@@ -162,6 +165,9 @@ public class BlogService {
                 blogResponse.setBlogId(blog.getId());
                 blogResponse.setTitle(blog.getTitle());
                 blogResponse.setDescription(blog.getDescription());
+
+                blogResponse.setBlogImageUrl(blog.getBlogImageUrl()); // DB se URL nikal kar Frontend ko bhejo
+
                 blogResponse.setContent(blog.getContent());
                 blogResponse.setAuthorId(blog.getAuthorId());
                 blogResponse.setCreatedDTTM(blog.getCreatedDTTM()); // Yahi line time ko frontend ke dabbe me dalegi

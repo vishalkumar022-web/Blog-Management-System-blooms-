@@ -32,6 +32,12 @@ public class Blog {
 
     private String description;
 
+    private String blogImageUrl; // 🟢 NAYA DABBA: Image URL ke liye
+
+    // Neeche iska Getter aur Setter bana de:
+    public String getBlogImageUrl() { return blogImageUrl; }
+    public void setBlogImageUrl(String blogImageUrl) { this.blogImageUrl = blogImageUrl; }
+
     private String content;
 
     private String status;

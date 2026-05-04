@@ -27,6 +27,14 @@ public class BlogResponse implements Serializable { // ✅ Change here
     private String authorId;
     private String status;
 
+
+    private String blogImageUrl; // 🟢 NAYA
+
+    // Iska bhi Getter aur Setter:
+    public String getBlogImageUrl() { return blogImageUrl; }
+    public void setBlogImageUrl(String blogImageUrl) { this.blogImageUrl = blogImageUrl; }
+
+
     private long likeCount;
     private List<String> likedByUsers;
 

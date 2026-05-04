@@ -71,6 +71,14 @@ private String userId; // Add userId field
         return blogContent;
     }
 
+    private String blogImageUrl; // 🟢 NAYA
+
+    // Iska bhi Getter aur Setter:
+    public String getBlogImageUrl() { return blogImageUrl; }
+    public void setBlogImageUrl(String blogImageUrl) { this.blogImageUrl = blogImageUrl; }
+
+
+
     public void setBlogContent(String blogContent) {
         this.blogContent = blogContent;
     }
