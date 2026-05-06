@@ -84,6 +84,10 @@ public class CategoryService {
         response.setDesc(category.getDescription());
         response.setCategoryUrl(category.getImageUrl());
         response.setStatus(category.getStatus());
+        response.setCreatedByUserId(category.getCreatedBy()); // ✅ NAYA: Created By User ID ko Response me set karna
+        response.setCreatedDTTM(category.getCreatedDTTM()); // Time set kar diya
+        response.setStatus(category.getStatus()); // Status set kar diya
+
 
         return new ApiResponse<>(true, "Category fetched successfully", response);
     }
@@ -108,6 +112,8 @@ public class CategoryService {
                     response.setDesc(category.getDescription());
                     response.setCategoryUrl(category.getImageUrl());
                     response.setStatus(category.getStatus());
+                    response.setCreatedByUserId(category.getCreatedBy()); // ✅ NAYA: Created By User ID ko Response me set karna
+                    response.setCreatedDTTM(category.getCreatedDTTM()); // Time set kar diya
                     responses.add(response);
                 }
             }
@@ -140,6 +146,9 @@ public class CategoryService {
                 response.setDesc(category.getDescription());
                 response.setCategoryUrl(category.getImageUrl());
                 response.setStatus(category.getStatus());
+                response.setCreatedByUserId(category.getCreatedBy()); // ✅ NAYA: Created By User ID ko Response me set karna
+                response.setCreatedDTTM(category.getCreatedDTTM()); // Time set kar diya
+
                 responses.add(response);
             }
             return new ApiResponse<>(true, "Search results fetched successfully", responses);
@@ -176,6 +185,9 @@ public class CategoryService {
             response.setTitle(category.getName());
             response.setDesc(category.getDescription());
             response.setCategoryUrl(category.getImageUrl());
+            response.setStatus(category.getStatus());
+            response.setCreatedByUserId(category.getCreatedBy()); // ✅ NAYA: Created By User ID ko Response me set karna
+            response.setCreatedDTTM(category.getCreatedDTTM()); // Time set kar diya
             return new ApiResponse<>(true, "Category updated successfully", response);
         } catch (Exception e) {
             throw new ApplicationException("Failed to update category");

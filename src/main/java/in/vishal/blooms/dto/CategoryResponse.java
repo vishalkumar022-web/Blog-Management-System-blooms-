@@ -1,18 +1,35 @@
 package in.vishal.blooms.dto;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 public class CategoryResponse implements Serializable { // ✅ Change here
     private static final long serialVersionUID = 1L;
 
     // ... fields getters setters same
 
-
+    private String createdByUserId; // User ki ID jisne category banayi
+    private LocalDateTime createdDTTM; // Date aur Time (Ya LocalDateTime)
     private String id;
     private String title;
     private String desc;
     private String categoryUrl;
     private String status;
+
+
+    public void setCreatedByUserId(String createdByUserId) {
+        this.createdByUserId = createdByUserId;
+    }
+    public String getCreatedByUserId() {
+        return createdByUserId;
+    }
+    public void setCreatedDTTM(LocalDateTime createdDTTM) {
+        this.createdDTTM = createdDTTM;
+    }
+    public LocalDateTime getCreatedDTTM() {
+        return createdDTTM;
+    }
+
 
     public String getStatus() {
         return status;

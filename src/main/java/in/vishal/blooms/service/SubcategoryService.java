@@ -103,6 +103,9 @@ public class SubcategoryService {
         response.setSubCategoryUrl(subCategory.getUrl());
         response.setCategoryId(subCategory.getCategoryId());
         response.setStatus(subCategory.getStatus());
+        response.setCreatedBy(subCategory.getCreatedBy()); // ✅ Naya field response me daala
+        response.setCreatedDTTM(subCategory.getCreatedDTTM());// ✅ Naya field response me daala
+
 
         return new ApiResponse<>(true, "SubCategory fetched successfully", response);
     }
@@ -127,6 +130,10 @@ public class SubcategoryService {
                     response.setSubCategoryUrl(subCategory.getUrl());
                     response.setCategoryId(subCategory.getCategoryId());
                     response.setStatus(subCategory.getStatus());
+                    response.setCreatedBy(subCategory.getCreatedBy()); // ✅ Naya field response me daala
+                    response.setCreatedDTTM(subCategory.getCreatedDTTM());// ✅ Naya field response me daala
+
+
                     responses.add(response);
                 }
             }
@@ -160,6 +167,9 @@ public class SubcategoryService {
                 response.setSubCategoryUrl(sc.getUrl());
                 response.setCategoryId(sc.getCategoryId());
                 response.setStatus(sc.getStatus());
+                response.setCreatedBy(sc.getCreatedBy()); // ✅ Naya field response me daala
+                response.setCreatedDTTM(sc.getCreatedDTTM());// ✅ Naya field response me daala
+
                 responses.add(response);
             }
             return new ApiResponse<>(true, "Search results fetched successfully", responses);
@@ -221,6 +231,9 @@ public class SubcategoryService {
             subCategoryResponse.setSubCategoryId(subCategory.getId());
             subCategoryResponse.setSubCategoryTittle(subCategory.getName());
             subCategoryResponse.setSubCategoryUrl(subCategory.getUrl());
+            subCategoryResponse.setCreatedBy(subCategory.getCreatedBy()); // ✅ Naya field response me daala
+            subCategoryResponse.setCreatedDTTM(subCategory.getCreatedDTTM());// ✅ Naya field response me daala
+
 
             return new ApiResponse<>(true, "SubCategory updated successfully", subCategoryResponse);
 

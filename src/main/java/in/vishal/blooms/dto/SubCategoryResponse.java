@@ -3,6 +3,7 @@ package in.vishal.blooms.dto;
 
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 public class SubCategoryResponse implements Serializable { // ✅ Change here
     private static final long serialVersionUID = 1L;
@@ -16,6 +17,23 @@ public class SubCategoryResponse implements Serializable { // ✅ Change here
     private String subCategoryDesc;
     private String subCategoryUrl;
     private String status;
+    private LocalDateTime createdDTTM;
+    private String createdBy;
+
+    public LocalDateTime getCreatedDTTM() {
+        return createdDTTM;
+    }
+    public void setCreatedDTTM(LocalDateTime createdDTTM) {
+        this.createdDTTM = createdDTTM;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
 
     public String getStatus() {
         return status;

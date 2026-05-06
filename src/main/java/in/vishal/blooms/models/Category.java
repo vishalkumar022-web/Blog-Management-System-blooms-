@@ -24,7 +24,8 @@ public class Category {
     private boolean active;
 
     private LocalDateTime createdDTTM;
-    private String createdBy;
+
+    private String createdByUserId;
 
     private String status;
 
@@ -79,11 +80,11 @@ public class Category {
     }
 
     public String getCreatedBy() {
-        return createdBy;
+        return createdByUserId;
     }
 
     public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+        this.createdByUserId = createdBy;
     }
 
     public String  getStatus() {
