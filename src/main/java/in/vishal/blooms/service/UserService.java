@@ -55,7 +55,8 @@ public class UserService {
             userResponse.setPhoneNumber(user.getPhoneNumber());
             userResponse.setRole(user.getRole());
 
-            userResponse.setMyCreatedCategories(categoryRepository.findByCreatedBy(userId).stream().filter(Category::isActive).map(Category::getName).toList());
+            // ✅ FIXED: findByCreatedBy ki jagah findByCreatedByUserId call kiya
+            userResponse.setMyCreatedCategories(categoryRepository.findByCreatedByUserId(userId).stream().filter(Category::isActive).map(Category::getName).toList());
             userResponse.setMyCreatedSubCategories(subCategoryRepository.findByCreatedBy(userId).stream().filter(SubCategory::getActive).map(SubCategory::getName).toList());
             userResponse.setMyCreatedBlogs(blogRepository.findByAuthorId(userId).stream().filter(Blog::getActive).map(Blog::getTitle).toList());
             // 🟢 NAYA LOGIC: Database (user) se nikal kar Frontend parcel (response) me daalo

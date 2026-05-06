@@ -23,5 +23,6 @@ public interface CategoryRepository extends MongoRepository<Category, String> {
     Page<Category> findByActiveTrue(Pageable pageable);
 
     // Interface ke andar ye line add karo:
-    List<Category> findByCreatedBy(String createdBy);
+    // ✅ FIXED: Sahi variable name 'createdByUserId' use kiya
+    List<Category> findByCreatedByUserId(String createdByUserId);
 }
