@@ -56,10 +56,26 @@ public class UserService {
             userResponse.setRole(user.getRole());
 
             // ✅ FIXED: findByCreatedBy ki jagah findByCreatedByUserId call kiya
-            userResponse.setMyCreatedCategories(categoryRepository.findByCreatedByUserId(userId).stream().filter(Category::isActive).map(Category::getName).toList());
-            userResponse.setMyCreatedSubCategories(subCategoryRepository.findByCreatedBy(userId).stream().filter(SubCategory::getActive).map(SubCategory::getName).toList());
-            userResponse.setMyCreatedBlogs(blogRepository.findByAuthorId(userId).stream().filter(Blog::getActive).map(Blog::getTitle).toList());
-            // 🟢 NAYA LOGIC: Database (user) se nikal kar Frontend parcel (response) me daalo
+            // ✅ NAYA: Ab hum sirf naam nahi, poore objects bhejenge
+            // 1. CATEGORY: Name | ID | Image | Desc | Status | Time
+            userResponse.setMyCreatedCategories(categoryRepository.findByCreatedByUserId(userId).stream()
+                    .filter(Category::isActive)
+                    .map(cat -> cat.getName() + "|" + cat.getId() + "|" + cat.getImageUrl() + "|" + cat.getDescription() + "|" + cat.getStatus() + "|" + cat.getCreatedDTTM())
+                    .toList());
+
+            // 2. SUBCATEGORY: Name | ID | Image(Url) | Desc | Status | Time
+            // 🚨 FIX: CategoryId ko beech se hata diya taaki sequence same rahe (0-Title, 1-ID, 2-Image, 3-Desc)
+            userResponse.setMyCreatedSubCategories(subCategoryRepository.findByCreatedBy(userId).stream()
+                    .filter(SubCategory::getActive)
+                    .map(sb -> sb.getName() + "|" + sb.getId() + "|" + sb.getUrl() + "|" + sb.getDescription() + "|" + sb.getStatus() + "|" + sb.getCreatedDTTM())
+                    .toList());
+
+            // 3. BLOG: Title | ID | Image | Desc | Status | Time
+            // 🚨 FIX: Title ko sabse aage (parts[0]) laya, fir ID, fir Image, fir Short Description.
+            userResponse.setMyCreatedBlogs(blogRepository.findByAuthorId(userId).stream()
+                    .filter(Blog::getActive)
+                    .map(bl -> bl.getTitle() + "|" + bl.getId() + "|" + bl.getBlogImageUrl() + "|" + bl.getDescription() + "|" + bl.getStatus() + "|" + bl.getCreatedDTTM())
+                    .toList());
             userResponse.setProfileBackgroundUrl(user.getProfileBackgroundUrl());
             userResponse.setAboutMe(user.getAboutMe());
             userResponse.setFollowerCount(userConnectionRepository.countByFollowingId(userId));
