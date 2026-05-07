@@ -38,6 +38,23 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(userIdFromToken));
     }
 
+
+
+    // =======================================================
+    // 🚨 NAYA: DUSRE USER KI PROFILE DEKHNE WALA API
+    // =======================================================
+    @GetMapping("/otherUser")
+    public ResponseEntity<ApiResponse<UserResponse>> getOtherUserProfile(@RequestParam String userId) {
+        // Ye seedha UserService se us user ki ID dhundh kar data la dega
+        return ResponseEntity.ok(userService.getUserById(userId));
+    }
+
+
+
+
+
+
+
     // 2. Search User By Name (Public)
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<List<UserResponse>>> searchUsers(
