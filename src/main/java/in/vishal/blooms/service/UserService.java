@@ -127,6 +127,8 @@ public class UserService {
                     r.setName(u.getName());
                     r.setUserName(u.getUserName());
                     r.setProfileUrl(u.getProfileUrl());
+                    r.setRole(u.getRole());
+                    r.setAboutMe(u.getAboutMe());
                     return r;
                 }).toList();
         return new ApiResponse<>(true, "Search results fetched", list);
