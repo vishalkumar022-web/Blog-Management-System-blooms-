@@ -2,6 +2,7 @@ package in.vishal.blooms.repository;
 
 import in.vishal.blooms.models.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable; // ✅ Correct Import
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
@@ -17,4 +18,6 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     // ✅ Pagination Search (Return type Page)
     Page<User> findByNameContainingIgnoreCaseAndIsActive(String name, boolean active, Pageable pageable);
+
+    Page<User> findByIsActive(boolean b, PageRequest of);
 }

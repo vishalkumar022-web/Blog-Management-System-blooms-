@@ -50,6 +50,13 @@ public class UserController {
     }
 
 
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size) {
+        // ERROR FIX: Isko ResponseEntity.ok ke andar daalna padega
+        return ResponseEntity.ok(userService.getAllUsers(page, size));
+    }
 
 
 

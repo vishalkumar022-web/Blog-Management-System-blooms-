@@ -88,6 +88,24 @@ public class UserService {
         }
     }
 
+    public ApiResponse<List<UserResponse>> getAllUsers(int page, int size) {
+        Page<User> userPage = userRepository.findByIsActive(true, PageRequest.of(page, size));
+        List<UserResponse> list = userPage.getContent().stream()
+                .filter(u -> !Role.ADMIN.getDisplayName().equalsIgnoreCase(u.getRole()))
+                .map(u -> {
+                    UserResponse r = new UserResponse();
+                    r.setUserId(u.getId());
+                    r.setName(u.getName());
+                    r.setUserName(u.getUserName());
+                    r.setProfileUrl(u.getProfileUrl());
+                    r.setRole(u.getRole());
+                    r.setAboutMe(u.getAboutMe());
+                    return r;
+                }).toList();
+        return new ApiResponse<>(true, "Users fetched successfully", list);
+    }
+
+
 
     public ApiResponse<UserResponse> updateUser(UserRequest userRequest) {
         User user = userRepository.findById(userRequest.getUserId())

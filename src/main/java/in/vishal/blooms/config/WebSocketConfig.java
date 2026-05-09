@@ -1,4 +1,4 @@
-package in.vishal.blooms.config;
+package in.vishal.blooms.config; // Apna package name match kar lena
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -10,20 +10,17 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    @org.springframework.beans.factory.annotation.Value("${frontend.url}")
-    private String frontendUrl;
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // ✅ FIX: Yahan bhi Live Server ke ports add kar diye
-        registry.addEndpoint("/ws")
-                .setAllowedOrigins(frontendUrl, "http://127.0.0.1:5500", "http://localhost:5500")
-                .withSockJS();
+        // Frontend is '/ws' endpoint par connect karega
+        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app");
-        registry.enableSimpleBroker("/topic");
+        // 🚨 FIX: Yahan "/topic" add karna zaroori hai kyunki ChatService wahi use kar raha hai
+        registry.enableSimpleBroker("/user", "/topic");
+        registry.setUserDestinationPrefix("/user");
     }
 }
