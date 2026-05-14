@@ -61,6 +61,12 @@ public class UserController {
 
 
 
+    @GetMapping("/")
+    public ResponseEntity<String> home() {
+        return ResponseEntity.ok("Welcome to Blooms API! Backend is running perfectly.");
+    }
+
+
 
     // 2. Search User By Name (Public)
     @GetMapping("/search")
